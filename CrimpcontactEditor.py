@@ -1,14 +1,14 @@
 import wx
 import json
 import os
-from CrimpcontaktEditorGUI import CrimpcontaktEditorGUI
+from CrimpcontactEditorGUI import CrimpcontactEditorGUI
 
 
-class CrimpcontaktEditor(CrimpcontaktEditorGUI):
+class CrimpcontactEditor(CrimpcontactEditorGUI):
     def __init__(self, parent, *args, **kwds):
         # Don't like this... why has frame a problem with kwds?
         preload = kwds.pop("preload")
-        CrimpcontaktEditorGUI.__init__(self, parent, *args, **kwds)
+        CrimpcontactEditorGUI.__init__(self, parent, *args, **kwds)
 
         self.data_directory = parent.data_directory
         self.old_contact = ""
@@ -235,9 +235,9 @@ class CrimpcontaktEditor(CrimpcontaktEditorGUI):
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.CrimpcontaktEditor = CrimpcontaktEditor(None, wx.ID_ANY, "")
-        self.SetTopWindow(self.CrimpcontaktEditor)
-        self.CrimpcontaktEditor.Show()
+        self.CrimpcontactEditor = CrimpcontactEditor(None, wx.ID_ANY, "")
+        self.SetTopWindow(self.CrimpcontactEditor)
+        self.CrimpcontactEditor.Show()
         return True
 
 

@@ -13,13 +13,13 @@ import wx
 # end wxGlade
 
 
-class CrimpcontaktEditorGUI(wx.Frame):
+class CrimpcontactEditorGUI(wx.Frame):
     def __init__(self, *args, **kwds):
-        # begin wxGlade: CrimpcontaktEditorGUI.__init__
+        # begin wxGlade: CrimpcontactEditorGUI.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((567, 447))
-        self.SetTitle("CrimpcontaktEditor")
+        self.SetTitle("CrimpcontactEditor")
         
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
         self.panel_1.SetMinSize((379, 361))
@@ -153,13 +153,13 @@ class CrimpcontaktEditorGUI(wx.Frame):
         self.Layout()
         # end wxGlade
 
-# end of class CrimpcontaktEditorGUI
+# end of class CrimpcontactEditorGUI
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.CrimpcontaktEditor = CrimpcontaktEditorGUI(None, wx.ID_ANY, "")
-        self.SetTopWindow(self.CrimpcontaktEditor)
-        self.CrimpcontaktEditor.Show()
+        self.CrimpcontactEditor = CrimpcontactEditorGUI(None, wx.ID_ANY, "")
+        self.SetTopWindow(self.CrimpcontactEditor)
+        self.CrimpcontactEditor.Show()
         return True
 
 # end of class MyApp
