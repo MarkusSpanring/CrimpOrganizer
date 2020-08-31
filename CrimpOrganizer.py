@@ -3,7 +3,7 @@ import os
 import json
 from CrimpOrganizerGUI import CrimpOrganizerGUI
 from CrimptoolEditor import CrimptoolEditor
-from CrimpcontaktEditor import CrimpcontaktEditor
+from CrimpcontactEditor import CrimpcontactEditor
 
 
 class CrimpOrganizer(CrimpOrganizerGUI):
@@ -42,16 +42,16 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                                 self.onInstructionSelected)
 
     def onNewContactClicked(self, event):
-        self.CrimpcontaktEditor = CrimpcontaktEditor(self, preload="")
-        self.CrimpcontaktEditor.Bind(wx.EVT_CLOSE, self.onContaktEditorClose)
-        self.CrimpcontaktEditor.Show()
+        self.CrimpcontactEditor = CrimpcontactEditor(self, preload="")
+        self.CrimpcontactEditor.Bind(wx.EVT_CLOSE, self.onContaktEditorClose)
+        self.CrimpcontactEditor.Show()
 
     def onEditContactClicked(self, event):
         contactID = self.lcContacts.GetFirstSelected()
         contactRef = self.lcContacts.GetItem(contactID, 0).GetText()
-        self.CrimpcontaktEditor = CrimpcontaktEditor(self, preload=contactRef)
-        self.CrimpcontaktEditor.Bind(wx.EVT_CLOSE, self.onContaktEditorClose)
-        self.CrimpcontaktEditor.Show()
+        self.CrimpcontactEditor = CrimpcontactEditor(self, preload=contactRef)
+        self.CrimpcontactEditor.Bind(wx.EVT_CLOSE, self.onContaktEditorClose)
+        self.CrimpcontactEditor.Show()
 
     def onContaktEditorClose(self, event):
         self.crimpcontacts = self.loadCrimpcontacts()
