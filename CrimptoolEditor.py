@@ -65,7 +65,9 @@ class CrimptoolEditor(CrimptoolEditorGUI):
             rows = self.lbToolIDs.GetCount()
             infoscreen["IDs"] = []
             for row in range(rows):
-                infoscreen["IDs"].append(self.lbToolIDs.GetString(row))
+                ID = self.lbToolIDs.GetString(row)
+                if ID:
+                    infoscreen["IDs"].append(ID)
 
             ref = "#".join([infoscreen["Producer"],
                             infoscreen["Crimp"],
@@ -234,7 +236,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         outfile = os.path.join(self.data_directory, "crimptools.json")
         if not os.path.exists(outfile):
             with open(outfile, "w") as FSO:
-                json.dump({}, FSO)
+                json.dump({}, FSO, indent=4)
             self.crimptools = {}
         else:
             with open(outfile, "r") as FSO:
@@ -244,7 +246,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         outfile = os.path.join(self.data_directory, "crimptools.json")
         if os.path.exists(outfile):
             with open(outfile, "w") as FSO:
-                json.dump(self.crimptools, FSO)
+                json.dump(self.crimptools, FSO, indent=4)
 
     def fillCrimpToolBox(self):
         self.lcCrimpTools.DeleteAllItems()

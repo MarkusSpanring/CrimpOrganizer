@@ -15,6 +15,8 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         self.xSections = ["0.25", "0.34", "0.50",
                           "0.75", "1.00", "1.50", "2.50",
                           "1.00+1.00", "1.50+1.50", "1.00+1.50"]
+        self.width, self.height = self.GetSize()
+        self.crimptool_alias = {}
 
         self.fillXSectionBox()
         self.loadCrimpContact(contact=preload)
@@ -31,8 +33,30 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         self.tcSoll.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.btnAddXSection.Bind(wx.EVT_BUTTON, self.onAddXSectionClicked)
         self.btnDeleteXSection.Bind(wx.EVT_BUTTON, self.onDeleteXSecClicked)
-        self.lcCrimptools.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onEntrySelected)
-        self.lcCrimptools.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onEntrySelected)
+        self.lcCrimptools.Bind(wx.EVT_LIST_ITEM_SELECTED,
+                               self.onEntrySelected)
+        self.lcCrimptools.Bind(wx.EVT_LIST_ITEM_DESELECTED,
+                               self.onEntrySelected)
+
+        # self.Bind(wx.EVT_MAXIMIZE, self.onResize)
+        # self.Bind(wx.EVT_SIZE, self.onResize)
+
+    def onResize(self, event):
+        width, height = self.GetSize()
+        if width < (1.5 * self.width):
+            font = wx.Font(13, wx.FONTFAMILY_DEFAULT,
+                           wx.FONTSTYLE_NORMAL,
+                           wx.FONTWEIGHT_NORMAL, False)
+            self.lcCrimptools.SetFont(font)
+            self.lcCrimptools.SetColumnWidth(1, 600)
+        else:
+            font = wx.Font(10, wx.FONTFAMILY_DEFAULT,
+                           wx.FONTSTYLE_NORMAL,
+                           wx.FONTWEIGHT_NORMAL, False)
+            self.lcCrimptools.SetFont(font)
+            self.lcCrimptools.SetColumnWidth(1, 400)
+        event.Skip()
+        print(self.GetSize())
 
     def onSaveClicked(self, event):
         refNr = self.tcRefNr.GetValue()
@@ -114,8 +138,11 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
         self.lcCrimptools.Append([xSection, tool, slot, soll])
         self.fillXSectionBox()
+        self.cbTool.Disable()
         self.cbTool.Clear()
+        self.cbSlot.Disable()
         self.cbSlot.Clear()
+        self.tcSoll.Disable()
         self.tcSoll.Clear()
 
     def onEntrySelected(self, event):
@@ -169,11 +196,11 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
     def fillToolBox(self, selection=""):
         tools = self.loadCrimpTools()
-        toolIds = list(tools.keys())
-        for toolid in sorted(toolIds):
-            self.cbTool.Append(toolid)
+        for tool in sorted(list(tools.keys())):
+            readable = self.getReadableToolName(tool, tools[tool])
+            self.cbTool.Append(readable)
         if selection:
-            self.cbTool.SetSelection(toolIds.index(selection))
+            self.cbTool.SetSelection(tools.index(selection))
         self.cbTool.Enable()
         return self.cbTool
 
@@ -181,7 +208,8 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         slotbox = self.FindWindowById(tool.GetId() + 100)
         slotbox.Clear()
         tools = self.loadCrimpTools()
-        slots = list(tools[tool.GetStringSelection()]["Slots"])
+        toolRef = self.crimptool_alias[tool.GetStringSelection()]
+        slots = list(tools[toolRef]["Slots"])
         slots.sort()
         for i, s in enumerate(slots):
 
@@ -209,6 +237,18 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
             with open(outfile, "r") as FSO:
                 return json.load(FSO)
 
+    def getReadableToolName(self, toolRef, toolInfo):
+        producer, crimp, producerNr = toolRef.split("#")
+
+        if len(toolInfo["IDs"]) > 1:
+            IDs = "(z.B. {0}, ...)".format(toolInfo["IDs"][0])
+        else:
+            IDs = "(z.B. {0})".format(toolInfo["IDs"][0])
+
+        readable = "{0} | {1} {2}".format(producer, crimp, IDs)
+        self.crimptool_alias[readable] = toolRef
+        return readable
+
     def loadCrimpContact(self, contact=""):
         outfile = os.path.join(self.data_directory, "crimpcontacts.json")
         if os.path.exists(outfile) and contact:
@@ -229,8 +269,6 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
                 self.lcCrimptools.Append([xs, tool, slot, soll])
 
             self.old_contact = contact
-
-
 
 
 class MyApp(wx.App):
