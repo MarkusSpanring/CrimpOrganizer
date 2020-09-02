@@ -9,13 +9,13 @@ import json
 import os
 from CrimptoolEditorGUI import CrimptoolEditorGUI
 
+
 class CrimptoolEditor(CrimptoolEditorGUI):
     def __init__(self, parent, *args, **kwds):
 
         CrimptoolEditorGUI.__init__(self, parent, *args, **kwds)
-        self.SetSize((591, 465))
         self.SetTitle("Crimptool")
-        self.defEntry = "--Neue Zange--"
+        self.defEntry = ["", "--Neue Zange--", ""]
         self.crimptools = {}
         self.data_directory = os.getcwd()
         self.loadCrimpInfo()  # Create new file if it does not exist
@@ -24,17 +24,22 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.btnDelete.Bind(wx.EVT_BUTTON, self.onDeleteClicked)
         self.btnAddSlot.Bind(wx.EVT_BUTTON, self.onAddSlotClicked)
         self.btnDeleteSlot.Bind(wx.EVT_BUTTON, self.onDeleteSlotClicked)
-        self.lbCrimpTools.Bind(wx.EVT_LISTBOX, self.onCrimpToolSelected)
+        self.lcCrimpTools.Bind(wx.EVT_LIST_ITEM_SELECTED,
+                               self.onCrimpToolSelected)
         self.lcSlots.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSlotSelected)
         self.lcSlots.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onSlotSelected)
 
-        self.tcID.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcProd.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcType.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcProdNr.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcCrimp.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcAWGSlot.Bind(wx.EVT_TEXT, self.onSlotChanged)
         self.tcMetSlot.Bind(wx.EVT_TEXT, self.onSlotChanged)
+
+        self.tcID.Bind(wx.EVT_TEXT, self.onIdChanged)
+        self.btnAddID.Bind(wx.EVT_BUTTON, self.onAddIDClicked)
+        self.lbToolIDs.Bind(wx.EVT_LISTBOX, self.onToolIDSelected)
+        self.btnRemoveID.Bind(wx.EVT_BUTTON, self.onRemoveIDClicked)
 
         self.fillCrimpToolBox()
 
@@ -45,32 +50,42 @@ class CrimptoolEditor(CrimptoolEditorGUI):
 
         elif self.btnEdit.GetLabel() == "Speichern":
             infoscreen = {}
-            infoscreen["ID"] = self.tcID.GetValue()
             infoscreen["Producer"] = self.tcProd.GetValue()
             infoscreen["Type"] = self.tcType.GetValue()
             infoscreen["ProducerNr"] = self.tcProdNr.GetValue()
             infoscreen["Crimp"] = self.tcCrimp.GetValue()
 
             rows = self.lcSlots.GetItemCount()
-            slots = []
+            infoscreen["Slots"] = []
             for row in range(rows):
                 awg = self.lcSlots.GetItem(itemIdx=row, col=0).GetText()
                 met = self.lcSlots.GetItem(itemIdx=row, col=1).GetText()
-                slots.append((awg, met))
-            infoscreen["Slots"] = slots
+                infoscreen["Slots"].append((awg, met))
 
-            self.crimptools[infoscreen["ID"]] = infoscreen
+            rows = self.lbToolIDs.GetCount()
+            infoscreen["IDs"] = []
+            for row in range(rows):
+                infoscreen["IDs"].append(self.lbToolIDs.GetString(row))
+
+            ref = "#".join([infoscreen["Producer"],
+                            infoscreen["Crimp"],
+                            infoscreen["ProducerNr"]])
+
+            self.crimptools[ref] = infoscreen
             self.saveCrimpInfo()
             self.disableInfoScreen()
             self.fillCrimpToolBox()
             self.btnEdit.Disable()
 
     def onDeleteClicked(self, event):
-        toolIdx = self.lbCrimpTools.GetSelection()
-        selTool = self.lbCrimpTools.GetString(toolIdx)
+        toolId = self.lcCrimpTools.GetFirstSelected()
+        producer = self.lcCrimpTools.GetItem(itemIdx=toolId, col=0).GetText()
+        crimp = self.lcCrimpTools.GetItem(itemIdx=toolId, col=1).GetText()
+        producerNr = self.lcCrimpTools.GetItem(itemIdx=toolId, col=2).GetText()
+        toolRef = "#".join([producer, crimp, producerNr])
 
-        if selTool != self.defEntry:
-            self.crimptools.pop(selTool)
+        if toolRef != self.defEntry:
+            self.crimptools.pop(toolRef)
             self.saveCrimpInfo()
             self.clearInfoScreen()
             self.fillCrimpToolBox()
@@ -80,25 +95,30 @@ class CrimptoolEditor(CrimptoolEditorGUI):
     def onCrimpToolSelected(self, event):
         self.disableInfoScreen()
 
-        toolIdx = self.lbCrimpTools.GetSelection()
-        selTool = self.lbCrimpTools.GetString(toolIdx)
-        if selTool == self.defEntry:
+        toolId = self.lcCrimpTools.GetFirstSelected()
+        producer = self.lcCrimpTools.GetItem(itemIdx=toolId, col=0).GetText()
+        crimp = self.lcCrimpTools.GetItem(itemIdx=toolId, col=1).GetText()
+        producerNr = self.lcCrimpTools.GetItem(itemIdx=toolId, col=2).GetText()
+        toolRef = "#".join([producer, crimp, producerNr])
+        if toolId == 0:
             self.enableInfoScreen()
             self.clearInfoScreen()
             self.btnEdit.SetLabel("Speichern")
             self.btnDelete.Disable()
             return
 
-        elif toolIdx != -1:
+        elif toolId != -1:
             self.clearInfoScreen()
-            infoscreen = self.crimptools[selTool]
-            self.tcID.SetValue(infoscreen["ID"])
+            infoscreen = self.crimptools[toolRef]
             self.tcProd.SetValue(infoscreen["Producer"])
             self.tcType.SetValue(infoscreen["Type"])
             self.tcProdNr.SetValue(infoscreen["ProducerNr"])
             self.tcCrimp.SetValue(infoscreen["Crimp"])
             for slot in infoscreen["Slots"]:
                 self.lcSlots.Append(slot)
+
+            for ID in infoscreen["IDs"]:
+                self.lbToolIDs.Append(ID)
             self.btnEdit.Enable()
             self.btnDelete.Enable()
 
@@ -114,8 +134,8 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         slotIdx = self.lcSlots.GetFirstSelected()
         if slotIdx == -1:
             self.btnDeleteSlot.Disable()
-            return
-        self.btnDeleteSlot.Enable()
+        elif slotIdx > -1 and self.lcSlots.IsEnabled():
+            self.btnDeleteSlot.Enable()
 
     def onDeleteSlotClicked(self, event):
         slotIdx = self.lcSlots.GetFirstSelected()
@@ -124,9 +144,32 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.onSlotSelected(event)
         self.onInfoChanged(event)
 
+    def onToolIDSelected(self, event):
+        if self.lbToolIDs.GetSelection() > -1:
+            self.btnRemoveID.Enable()
+        else:
+            self.btnRemoveID.Disable()
+
+    def onIdChanged(self, event):
+        if self.tcID.GetValue() == "":
+            self.btnAddID.Disable()
+        else:
+            self.btnAddID.Enable()
+
+    def onAddIDClicked(self, event):
+        newID = self.tcID.GetValue()
+        self.lbToolIDs.Append(newID)
+        self.tcID.SetValue("")
+        self.onInfoChanged(event)
+
+    def onRemoveIDClicked(self, event):
+        toolID = self.lbToolIDs.GetSelection()
+        self.lbToolIDs.Delete(toolID)
+        self.btnRemoveID.Disable()
+        self.onInfoChanged(event)
+
     def onInfoChanged(self, event):
         infoscreen = {}
-        infoscreen["ID"] = self.tcID.GetValue()
         infoscreen["Producer"] = self.tcProd.GetValue()
         infoscreen["Type"] = self.tcType.GetValue()
         infoscreen["ProducerNr"] = self.tcProdNr.GetValue()
@@ -137,6 +180,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
             completeInfo.append(infoscreen[k] != "")
 
         completeInfo.append(self.lcSlots.GetItemCount() > 0)
+        completeInfo.append(self.lbToolIDs.GetCount() > 0)
 
         if all(completeInfo):
             self.btnEdit.SetLabel("Speichern")
@@ -153,17 +197,20 @@ class CrimptoolEditor(CrimptoolEditorGUI):
 
     def disableInfoScreen(self):
         self.btnEdit.SetLabel("Bearbeiten")
-        self.tcID.Disable()
         self.tcProd.Disable()
         self.tcType.Disable()
+        self.tcID.Disable()
+        self.lbToolIDs.Disable()
         self.tcProdNr.Disable()
         self.tcCrimp.Disable()
         self.tcAWGSlot.Disable()
         self.tcMetSlot.Disable()
         self.lcSlots.Disable()
+        self.btnDeleteSlot.Disable()
 
     def enableInfoScreen(self):
         self.btnEdit.SetLabel("Speichern")
+        self.lbToolIDs.Enable()
         self.tcID.Enable()
         self.tcProd.Enable()
         self.tcType.Enable()
@@ -174,13 +221,13 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.lcSlots.Enable()
 
     def clearInfoScreen(self):
-        self.tcID.Clear()
         self.tcProd.Clear()
         self.tcType.Clear()
         self.tcProdNr.Clear()
         self.tcCrimp.Clear()
         self.tcAWGSlot.Clear()
         self.tcMetSlot.Clear()
+        self.lbToolIDs.Clear()
         self.lcSlots.DeleteAllItems()
 
     def loadCrimpInfo(self):
@@ -200,13 +247,13 @@ class CrimptoolEditor(CrimptoolEditorGUI):
                 json.dump(self.crimptools, FSO)
 
     def fillCrimpToolBox(self):
-        self.lbCrimpTools.Clear()
-        self.lbCrimpTools.Append(self.defEntry)
+        self.lcCrimpTools.DeleteAllItems()
+        self.lcCrimpTools.Append(self.defEntry)
 
         crimptools = list(self.crimptools.keys())
         crimptools.sort()
         for k in crimptools:
-            self.lbCrimpTools.Append(k)
+            self.lcCrimpTools.Append(k.split("#"))
 
 
 class Crimptool(wx.App):

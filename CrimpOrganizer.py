@@ -4,6 +4,8 @@ import json
 from CrimpOrganizerGUI import CrimpOrganizerGUI
 from CrimptoolEditor import CrimptoolEditor
 from CrimpcontactEditor import CrimpcontactEditor
+from OrderDetails import OrderDetails
+from exporter import CrimpInstructionPDF
 
 
 class CrimpOrganizer(CrimpOrganizerGUI):
@@ -40,6 +42,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                                 self.onInstructionSelected)
         self.lcUseContacts.Bind(wx.EVT_LIST_ITEM_DESELECTED,
                                 self.onInstructionSelected)
+
+        self.btnCreateInstructions.Bind(wx.EVT_BUTTON, self.onCreateClicked)
 
     def onNewContactClicked(self, event):
         self.CrimpcontactEditor = CrimpcontactEditor(self, preload="")
@@ -158,6 +162,17 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         else:
             self.btnCreateInstructions.Disable()
             self.btnRemoveEntry.Disable()
+
+    def onCreateClicked(self, event):
+        self.OrderDetails = OrderDetails(self)
+        self.OrderDetails.Bind(wx.EVT_CLOSE, self.onOrderDetailsClose)
+        self.OrderDetails.Show()
+
+    def onOrderDetailsClose(self, event):
+        details = self.OrderDetails.readInfoScreen()
+        pdfcreator = CrimpInstructionPDF()
+        pdfcreator.createPDF(order=details)
+        event.Skip()
 
     def fillContacts(self, searchpattern=""):
         self.btnEditContact.Disable()

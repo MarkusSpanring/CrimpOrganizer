@@ -66,7 +66,7 @@ class CrimpInstructionPDF():
                                start - self.heightOffset(fontsize),
                                description)
 
-    def drawInformation(self):
+    def drawInformation(self, order=[]):
         start = 530
         data = [['Bestellnummer:', '5000017911-I78'],
                 ["Auftragsnummer:", "46207764"],
@@ -80,35 +80,88 @@ class CrimpInstructionPDF():
         f.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
         f.drawOn(self.canvas, self.border, start)
 
-    def drawCrimptable(self):
-        start = 480
+    def drawHeader(self, start):
+        header = [["Draht", "Pos.", "Gehäuse", "Crimpung",
+                   "Quersch.", "Einsatz", "Zange", "Wert"]]
 
-        data = [["Draht", "Pos.", "Gehäuse", "Crimpung",
-                 "Quersch.", "Einsatz", "Zange", "Wert"],
-                [] * 8]
+        colspacing = [35, 32, 55, 100, 50, 85, 85, 65]
+        h = Table(header, colspacing, 16)
 
-        colspacing = [35, 32, 58, 100, 50, 85, 85, 60]
-        f = Table(data, colspacing, 16)
-        f.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-                               ('ALIGN', (1, 0), (1, -1), 'RIGHT')]))
+        style = [('LINEABOVE', (0, 0), (-1, 0), 1.5, colors.black),
+                 ('LINEBELOW', (0, 0), (-1, 0), 0.5, colors.black),
+                 ('LINEBEFORE', (0, 0), (0, 1), 1.5, colors.black),
+                 ('LINEAFTER', (0, 0), (-1, 1), 0.5, colors.black),
+                 ('LINEAFTER', (-1, 0), (-1, 1), 1.5, colors.black),
+                 ('ALIGN', (0, 0), (-1, 0), 'CENTER')]
+        h.setStyle(TableStyle(style))
 
-        f.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
-        f.drawOn(self.canvas, self.border, start)
+        h.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
+        h.drawOn(self.canvas, self.border, start)
+
+    def drawSubHeader(self, start):
+        start = start - 16
+
+        subheader = [["", "", "Bezeichnung", "Type", u"mm²", u"mm²",
+                      "AWG", "Fabrikat", "Nummer", "Soll", "Ist"]]
+
+        colspacing = [35, 32, 55, 100, 50, 42.5, 42.5, 42.5, 42.5, 32.5, 32.5]
+        sh = Table(subheader, colspacing, 16)
+
+        style = [('LINEBELOW', (0, 0), (-1, 0), 1.5, colors.black),
+                 ('FONTSIZE', (0, 0), (-1, 0), 8),
+                 ('LINEAFTER', (-1, 0), (-1, 1), 1.5, colors.black),
+                 ('LINEBEFORE', (0, 0), (0, 1), 1.5, colors.black),
+                 ('ALIGN', (0, 0), (-1, 0), 'CENTER')]
+        for col in [0, 1, 2, 3, 4, 6, 8, 10]:
+            style.append(('LINEAFTER', (col, 0), (col, 1), 0.5, colors.black))
+
+        sh.setStyle(TableStyle(style))
+
+        sh.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
+        sh.drawOn(self.canvas, self.border, start)
+
+    def drawInstruction(self, start, rows=20):
+        start = start - (rows + 1) * 16
+
+        data = []
+        for i in range(rows):
+            data.append([""] * 11)
+        data[0] = ["1"] * 11
+
+        colspacing = [35, 32, 55, 100, 50, 42.5, 42.5, 42.5, 42.5, 32.5, 32.5]
+        t = Table(data, colspacing, 16)
+
+        style = [('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+                 ('FONTSIZE', (0, 0), (-1, 0), 8),
+                 ('LINEAFTER', (-1, 0), (-1, -1), 1.5, colors.black),
+                 ('LINEBEFORE', (0, 0), (0, -1), 1.5, colors.black),
+                 ('LINEBELOW', (0, -1), (-1, -1), 1.5, colors.black),
+                 ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+                 ('VALIGN', (0, 0), (-1, 0), 'MIDDLE')]
+
+        t.setStyle(TableStyle(style))
+
+        t.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
+        t.drawOn(self.canvas, self.border, start)
 
     def heightOffset(self, fontsize):
         return fontsize + fontsize * 0.2
 
-    def createUpPDF(self):
+    def createPDF(self, order=[]):
         self.addHeader()
         self.addCustomer()
-        self.drawInformation()
-        self.drawCrimptable()
+        self.drawInformation(order=order)
+
+        start = 500
+        self.drawHeader(start)
+        self.drawSubHeader(start)
+        self.drawInstruction(start)
         self.canvas.save()
 
 
 def main():
     pdf = CrimpInstructionPDF()
-    pdf.createUpPDF()
+    pdf.createPDF()
 
 
 if __name__ == '__main__':
