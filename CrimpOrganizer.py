@@ -68,10 +68,13 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
     def onManageToolsClicked(self, event):
         self.CrimptoolEditor = CrimptoolEditor(self)
-        self.CrimptoolEditor.Bind(wx.EVT_CLOSE, self.onContaktEditorClose)
+        self.CrimptoolEditor.Bind(wx.EVT_CLOSE, self.onToolEditorClose)
         self.CrimptoolEditor.Show()
 
     def onToolEditorClose(self, event):
+        self.crimptools = self.loadCrimptools()
+        self.fillContacts()
+        self.lcToolSummary.DeleteAllItems()
         event.Skip()
 
     def onContactSelected(self, event):
@@ -182,10 +185,15 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         contacts.sort()
         self.lcContacts.DeleteAllItems()
         for contact in contacts:
-
             producer = self.crimpcontacts[contact]["producer"]
-            if searchpattern in contact or searchpattern in producer:
-                self.lcContacts.Append([contact, producer])
+            series = self.crimpcontacts[contact]["series"]
+
+            searchresult = any([searchpattern in contact,
+                                searchpattern in producer,
+                                searchpattern in series
+                                ])
+            if searchresult:
+                self.lcContacts.Append([contact, producer, series])
 
     def loadCrimptools(self):
         outfile = os.path.join(self.data_directory, "crimptools.json")

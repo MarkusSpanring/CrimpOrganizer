@@ -24,7 +24,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         self.btnSave.Bind(wx.EVT_BUTTON, self.onSaveClicked)
 
         self.tcRefNr.Bind(wx.EVT_TEXT, self.onInfoChanged)
-        self.tcType.Bind(wx.EVT_TEXT, self.onInfoChanged)
+        self.tcSeries.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcProducer.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcProducerNr.Bind(wx.EVT_TEXT, self.onInfoChanged)
 
@@ -60,13 +60,13 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
     def onSaveClicked(self, event):
         refNr = self.tcRefNr.GetValue()
-        contactType = self.tcType.GetValue()
+        contactSeries = self.tcSeries.GetValue()
         producer = self.tcProducer.GetValue()
         producerNr = self.tcProducerNr.GetValue()
 
         contact = {}
         contact["refNr"] = refNr
-        contact["type"] = contactType
+        contact["series"] = contactSeries
         contact["producer"] = producer
         contact["producerNr"] = producerNr
         contact["crosssection"] = {}
@@ -159,7 +159,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
     def onInfoChanged(self, event):
         infoscreen = []
         infoscreen.append(self.tcRefNr.GetValue())
-        infoscreen.append(self.tcType.GetValue())
+        infoscreen.append(self.tcSeries.GetValue())
         infoscreen.append(self.tcProducer.GetValue())
         infoscreen.append(self.tcProducerNr.GetValue())
 
@@ -256,7 +256,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
                 contacts = json.load(FSO)
 
             self.tcRefNr.SetValue(contacts[contact]["refNr"])
-            self.tcType.SetValue(contacts[contact]["type"])
+            self.tcSeries.SetValue(contacts[contact]["series"])
             self.tcProducer.SetValue(contacts[contact]["producer"])
             self.tcProducerNr.SetValue(contacts[contact]["producerNr"])
 
