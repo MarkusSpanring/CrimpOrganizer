@@ -83,9 +83,10 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.lcToolSummary.DeleteAllItems()
             contact = self.crimpcontacts[contactRef]
             for xs in sorted(contact["crosssection"].keys()):
-                tool = contact["crosssection"][xs]["tool"]
                 slot = contact["crosssection"][xs]["slot"]
-                self.lcToolSummary.Append([xs, tool, slot])
+                tool = contact["crosssection"][xs]["tool"]
+                for ID in self.crimptools[tool]["IDs"]:
+                    self.lcToolSummary.Append([xs, ID, slot])
         else:
             self.btnEditContact.Disable()
             self.btnDeleteContact.Disable()

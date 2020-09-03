@@ -78,7 +78,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
             soll = self.lcCrimptools.GetItem(row, 3).GetText()
 
             contact["crosssection"][xs] = {}
-            contact["crosssection"][xs]["tool"] = tool
+            contact["crosssection"][xs]["tool"] = self.crimptool_alias[tool]
             contact["crosssection"][xs]["slot"] = slot
             contact["crosssection"][xs]["soll"] = soll
 
