@@ -2,6 +2,9 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
+from reportlab.platypus.paragraph import Paragraph
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.utils import simpleSplit
 from reportlab.lib import colors
 from datetime import datetime
 
@@ -66,15 +69,20 @@ class CrimpInstructionPDF():
                                start - self.heightOffset(fontsize),
                                description)
 
-    def drawInformation(self, order=[]):
+    def drawInformation(self, order_information=[]):
         start = 530
-        data = [['Bestellnummer:', '5000017911-I78'],
-                ["Auftragsnummer:", "46207764"],
-                ["Belegnummer:", "1862020"],
-                ["Protokollnummer:", "CA1862020"],
+        data = [['Bestellnummer:', ''],
+                ["Auftragsnummer:", ""],
+                ["Belegnummer:", ""],
+                ["Protokollnummer:", ""],
                 ["Zeichnungsnummer:", "ED002020R15"]]
+        if order_information:
+            for i, entry in enumerate(order_information):
+                data[i][1] = entry
+
         f = Table(data, None, 16)
         f.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+                               ('FONTSIZE', (0, 0), (-1, -1), 9),
                                ('ALIGN', (1, 0), (1, -1), 'RIGHT')]))
 
         f.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
@@ -84,7 +92,7 @@ class CrimpInstructionPDF():
         header = [["Draht", "Pos.", "Gehäuse", "Crimpung",
                    "Quersch.", "Einsatz", "Zange", "Wert"]]
 
-        colspacing = [35, 32, 55, 100, 50, 85, 85, 65]
+        colspacing = [35, 32, 55, 100, 50, 75, 105, 55]
         h = Table(header, colspacing, 16)
 
         style = [('LINEABOVE', (0, 0), (-1, 0), 1.5, colors.black),
@@ -92,7 +100,7 @@ class CrimpInstructionPDF():
                  ('LINEBEFORE', (0, 0), (0, 1), 1.5, colors.black),
                  ('LINEAFTER', (0, 0), (-1, 1), 0.5, colors.black),
                  ('LINEAFTER', (-1, 0), (-1, 1), 1.5, colors.black),
-                 ('ALIGN', (0, 0), (-1, 0), 'CENTER')]
+                 ('ALIGN', (0, 0), (-1, -1), 'CENTER')]
         h.setStyle(TableStyle(style))
 
         h.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
@@ -101,17 +109,17 @@ class CrimpInstructionPDF():
     def drawSubHeader(self, start):
         start = start - 16
 
-        subheader = [["", "", "Bezeichnung", "Type", u"mm²", u"mm²",
-                      "AWG", "Fabrikat", "Nummer", "Soll", "Ist"]]
+        subheader = [["", "", "Bezeichnung", "Type", u"mm²", "AWG",
+                     u"mm²", "Fabrikat", "Nummer", "Soll", "Ist"]]
 
-        colspacing = [35, 32, 55, 100, 50, 42.5, 42.5, 42.5, 42.5, 32.5, 32.5]
+        colspacing = [35, 32, 55, 100, 50, 37.5, 37.5, 47.5, 57.5, 27.5, 27.5]
         sh = Table(subheader, colspacing, 16)
 
         style = [('LINEBELOW', (0, 0), (-1, 0), 1.5, colors.black),
                  ('FONTSIZE', (0, 0), (-1, 0), 8),
                  ('LINEAFTER', (-1, 0), (-1, 1), 1.5, colors.black),
                  ('LINEBEFORE', (0, 0), (0, 1), 1.5, colors.black),
-                 ('ALIGN', (0, 0), (-1, 0), 'CENTER')]
+                 ('ALIGN', (0, 0), (-1, -1), 'CENTER')]
         for col in [0, 1, 2, 3, 4, 6, 8, 10]:
             style.append(('LINEAFTER', (col, 0), (col, 1), 0.5, colors.black))
 
@@ -120,48 +128,90 @@ class CrimpInstructionPDF():
         sh.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
         sh.drawOn(self.canvas, self.border, start)
 
-    def drawInstruction(self, start, rows=20):
-        start = start - (rows + 1) * 16
+    def drawInstruction(self, start, instructions=[], rows=20):
+        start = start - (rows * 19) - 16
 
-        data = []
-        for i in range(rows):
+        colspacing = [35, 32, 55, 100, 50, 37.5, 37.5, 47.5, 57.5, 27.5, 27.5]
+        data = self.unrollInstructions(instructions, colspacing)
+
+        for i in range(rows - len(instructions)):
             data.append([""] * 11)
-        data[0] = ["1"] * 11
 
-        colspacing = [35, 32, 55, 100, 50, 42.5, 42.5, 42.5, 42.5, 32.5, 32.5]
-        t = Table(data, colspacing, 16)
+        t = Table(data, colspacing, 19)
 
         style = [('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-                 ('FONTSIZE', (0, 0), (-1, 0), 8),
+                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                  ('LINEAFTER', (-1, 0), (-1, -1), 1.5, colors.black),
                  ('LINEBEFORE', (0, 0), (0, -1), 1.5, colors.black),
                  ('LINEBELOW', (0, -1), (-1, -1), 1.5, colors.black),
-                 ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-                 ('VALIGN', (0, 0), (-1, 0), 'MIDDLE')]
+                 ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                 ('RIGHTPADDING', (0, 0), (-1, -1), 0)]
 
         t.setStyle(TableStyle(style))
 
         t.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
         t.drawOn(self.canvas, self.border, start)
 
+    def unrollInstructions(self, instructions, colspacing):
+        table = []
+
+        for i, instruction in enumerate(instructions.keys()):
+            xs, contact = instruction.split("#")
+            pos = instructions[instruction]["pos"]
+            name = instructions[instruction]["name"]
+            IDs = ", ".join(instructions[instruction]["IDs"])
+            slot = instructions[instruction]["slot"]
+            soll = instructions[instruction]["soll"]
+            tmpRow = [i, pos, name, contact, xs,
+                      slot[0], slot[1],
+                      "detsch", IDs, soll, ""]
+            table.append(applyStyle(tmpRow, self.default_font, colspacing))
+        return table
+
     def heightOffset(self, fontsize):
         return fontsize + fontsize * 0.2
 
-    def createPDF(self, order=[]):
+    def createPDF(self, order_information=[], instructions=[]):
         self.addHeader()
         self.addCustomer()
-        self.drawInformation(order=order)
+        self.drawInformation(order_information=order_information)
 
         start = 500
         self.drawHeader(start)
         self.drawSubHeader(start)
-        self.drawInstruction(start)
+        self.drawInstruction(start, instructions=instructions)
         self.canvas.save()
+
+
+def applyStyle(row, font, colspacing):
+    tmpRow = []
+    for i, cell in enumerate(row):
+        for fontsize in [8, 7, 6, 5]:
+            lines = simpleSplit(str(cell), font, fontsize, colspacing[i] - 5)
+
+            if len(lines) < 3 and ((len(lines) * fontsize * 1.2)) < 19:
+                style = ParagraphStyle(name='normal',
+                                       alignment=1,
+                                       leading=fontsize,
+                                       # leftIndent=0,
+                                       # borderPadding=0,
+                                       # rightIndent=0,
+                                       # spaceBefore=0,
+                                       # spaceAfter=0,
+                                       wordWrap=None,
+                                       fontSize=fontsize)
+                break
+        tmpRow.append(Paragraph(str(cell), style))
+    return tmpRow
 
 
 def main():
     pdf = CrimpInstructionPDF()
-    pdf.createPDF()
+    instructions = {"1#ML / 3ED10025234R51":{"pos":"3","name":"4","IDs":["Z123456","Z789012","Z987654","Z456987"],"slot":["","10-16"],"soll":"8"},
+                    "1#3ED10025234R51 / 3ED10025234R51":{"pos":"3","name":"4","IDs":["Z123456","Z789012","Z987654"],"slot":["22-20",""],"soll":"8"},
+                    "1#MNL / 3ED10025234R53":{"pos":"3","name":"4","IDs":["Z123456","Z789012"],"slot":["22-20","10-16"],"soll":"8"},
+                    "1#3ED10025234R54":{"pos":"3","name":"4","IDs":["Z123456"],"slot":["22-20","1.50 - 1.60"],"soll":"8"}}
+    pdf.createPDF(instructions=instructions)
 
 
 if __name__ == '__main__':
