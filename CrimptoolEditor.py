@@ -23,6 +23,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
 
         self.btnEdit.Bind(wx.EVT_BUTTON, self.onEditClicked)
         self.btnDelete.Bind(wx.EVT_BUTTON, self.onDeleteClicked)
+        self.tcSearchTool.Bind(wx.EVT_TEXT, self.onSearchChanged)
         self.btnAddSlot.Bind(wx.EVT_BUTTON, self.onAddSlotClicked)
         self.btnDeleteSlot.Bind(wx.EVT_BUTTON, self.onDeleteSlotClicked)
         self.lcCrimpTools.Bind(wx.EVT_LIST_ITEM_SELECTED,
@@ -97,6 +98,10 @@ class CrimptoolEditor(CrimptoolEditorGUI):
             self.fillCrimpToolBox()
             self.btnEdit.Disable()
             self.btnDelete.Disable()
+
+    def onSearchChanged(self, event):
+        searchpattern = self.tcSearchTool.GetValue()
+        self.fillCrimpToolBox(searchpattern)
 
     def onCrimpToolSelected(self, event):
         self.disableInfoScreen()
@@ -253,14 +258,15 @@ class CrimptoolEditor(CrimptoolEditorGUI):
             os.makedirs(outdir)
         return outdir
 
-    def fillCrimpToolBox(self):
+    def fillCrimpToolBox(self, searchpattern=""):
         self.lcCrimpTools.DeleteAllItems()
         self.lcCrimpTools.Append(self.defEntry)
 
         crimptools = list(self.crimptools.keys())
-        crimptools.sort()
-        for k in crimptools:
-            self.lcCrimpTools.Append(k.split("#"))
+        for crimptool in sorted(crimptools):
+            if searchpattern and searchpattern not in crimptool:
+                continue
+            self.lcCrimpTools.Append(crimptool.split("#"))
 
 
 class Crimptool(wx.App):
