@@ -30,9 +30,8 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.lcSlots.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onSlotSelected)
 
         self.tcProd.Bind(wx.EVT_TEXT, self.onInfoChanged)
-        self.tcType.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcProdNr.Bind(wx.EVT_TEXT, self.onInfoChanged)
-        self.tcCrimp.Bind(wx.EVT_TEXT, self.onInfoChanged)
+        self.tcSeries.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcAWGSlot.Bind(wx.EVT_TEXT, self.onSlotChanged)
         self.tcMetSlot.Bind(wx.EVT_TEXT, self.onSlotChanged)
 
@@ -50,17 +49,16 @@ class CrimptoolEditor(CrimptoolEditorGUI):
 
         elif self.btnEdit.GetLabel() == "Speichern":
             infoscreen = {}
-            infoscreen["Producer"] = self.tcProd.GetValue()
-            infoscreen["Type"] = self.tcType.GetValue()
-            infoscreen["ProducerNr"] = self.tcProdNr.GetValue()
-            infoscreen["Crimp"] = self.tcCrimp.GetValue()
+            infoscreen["producer"] = self.tcProd.GetValue()
+            infoscreen["producerNr"] = self.tcProdNr.GetValue()
+            infoscreen["series"] = self.tcSeries.GetValue()
 
             rows = self.lcSlots.GetItemCount()
-            infoscreen["Slots"] = []
+            infoscreen["slots"] = []
             for row in range(rows):
                 awg = self.lcSlots.GetItem(itemIdx=row, col=0).GetText()
                 met = self.lcSlots.GetItem(itemIdx=row, col=1).GetText()
-                infoscreen["Slots"].append((awg, met))
+                infoscreen["slots"].append((awg, met))
 
             rows = self.lbToolIDs.GetCount()
             infoscreen["IDs"] = []
@@ -69,9 +67,9 @@ class CrimptoolEditor(CrimptoolEditorGUI):
                 if ID:
                     infoscreen["IDs"].append(ID)
 
-            ref = "#".join([infoscreen["Producer"],
-                            infoscreen["Crimp"],
-                            infoscreen["ProducerNr"]])
+            ref = "#".join([infoscreen["producer"],
+                            infoscreen["series"],
+                            infoscreen["producerNr"]])
 
             self.crimptools[ref] = infoscreen
             self.saveCrimpInfo()
@@ -112,11 +110,10 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         elif toolId != -1:
             self.clearInfoScreen()
             infoscreen = self.crimptools[toolRef]
-            self.tcProd.SetValue(infoscreen["Producer"])
-            self.tcType.SetValue(infoscreen["Type"])
-            self.tcProdNr.SetValue(infoscreen["ProducerNr"])
-            self.tcCrimp.SetValue(infoscreen["Crimp"])
-            for slot in infoscreen["Slots"]:
+            self.tcProd.SetValue(infoscreen["producer"])
+            self.tcProdNr.SetValue(infoscreen["producerNr"])
+            self.tcSeries.SetValue(infoscreen["series"])
+            for slot in infoscreen["slots"]:
                 self.lcSlots.Append(slot)
 
             for ID in infoscreen["IDs"]:
@@ -172,10 +169,9 @@ class CrimptoolEditor(CrimptoolEditorGUI):
 
     def onInfoChanged(self, event):
         infoscreen = {}
-        infoscreen["Producer"] = self.tcProd.GetValue()
-        infoscreen["Type"] = self.tcType.GetValue()
-        infoscreen["ProducerNr"] = self.tcProdNr.GetValue()
-        infoscreen["Crimp"] = self.tcCrimp.GetValue()
+        infoscreen["producer"] = self.tcProd.GetValue()
+        infoscreen["producerNr"] = self.tcProdNr.GetValue()
+        infoscreen["series"] = self.tcSeries.GetValue()
 
         completeInfo = []
         for k in infoscreen.keys():
@@ -200,11 +196,10 @@ class CrimptoolEditor(CrimptoolEditorGUI):
     def disableInfoScreen(self):
         self.btnEdit.SetLabel("Bearbeiten")
         self.tcProd.Disable()
-        self.tcType.Disable()
         self.tcID.Disable()
         self.lbToolIDs.Disable()
         self.tcProdNr.Disable()
-        self.tcCrimp.Disable()
+        self.tcSeries.Disable()
         self.tcAWGSlot.Disable()
         self.tcMetSlot.Disable()
         self.lcSlots.Disable()
@@ -215,18 +210,16 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.lbToolIDs.Enable()
         self.tcID.Enable()
         self.tcProd.Enable()
-        self.tcType.Enable()
         self.tcProdNr.Enable()
-        self.tcCrimp.Enable()
+        self.tcSeries.Enable()
         self.tcAWGSlot.Enable()
         self.tcMetSlot.Enable()
         self.lcSlots.Enable()
 
     def clearInfoScreen(self):
         self.tcProd.Clear()
-        self.tcType.Clear()
         self.tcProdNr.Clear()
-        self.tcCrimp.Clear()
+        self.tcSeries.Clear()
         self.tcAWGSlot.Clear()
         self.tcMetSlot.Clear()
         self.lbToolIDs.Clear()

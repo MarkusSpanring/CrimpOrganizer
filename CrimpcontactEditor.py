@@ -7,7 +7,7 @@ from CrimpcontactEditorGUI import CrimpcontactEditorGUI
 class CrimpcontactEditor(CrimpcontactEditorGUI):
     def __init__(self, parent, *args, **kwds):
         # Don't like this... why has frame a problem with kwds?
-        preload = kwds.pop("preload")
+        preload = kwds.pop("preload", "")
         CrimpcontactEditorGUI.__init__(self, parent, *args, **kwds)
 
         self.data_directory = parent.data_directory
@@ -18,6 +18,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         self.width, self.height = self.GetSize()
         self.crimptool_alias = {}
 
+        self.crimptools = self.loadCrimpTools()
         self.fillXSectionBox()
         self.loadCrimpContact(contact=preload)
 
@@ -84,25 +85,6 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
         self.saveContactInfo(contact)
         self.Close()
-
-    def saveContactInfo(self, contact):
-        outfile = os.path.join(self.data_directory, "crimpcontacts.json")
-
-        if not os.path.exists(outfile):
-            crimpcontacts = {}
-            crimpcontacts[contact["refNr"]] = contact
-            with open(outfile, "w") as FSO:
-                json.dump(crimpcontacts, FSO)
-
-        else:
-            with open(outfile, "r") as FSO:
-                crimpcontacts = json.load(FSO)
-                if self.old_contact and self.old_contact != contact["refNr"]:
-                    crimpcontacts.pop(self.old_contact)
-
-                crimpcontacts[contact["refNr"]] = contact
-            with open(outfile, "w") as FSO:
-                json.dump(crimpcontacts, FSO)
 
     def onCrosssectionSelected(self, event):
         xSection = self.cbXSection.GetStringSelection()
@@ -195,21 +177,19 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
             self.cbXSection.Append(xs)
 
     def fillToolBox(self, selection=""):
-        tools = self.loadCrimpTools()
-        for tool in sorted(list(tools.keys())):
-            readable = self.getReadableToolName(tool, tools[tool])
+        for tool in sorted(list(self.crimptools.keys())):
+            readable = self.getReadableToolName(tool)
             self.cbTool.Append(readable)
         if selection:
-            self.cbTool.SetSelection(tools.index(selection))
+            self.cbTool.SetSelection(self.crimptools.index(selection))
         self.cbTool.Enable()
         return self.cbTool
 
     def fillSlotBox(self, tool, selection=""):
         slotbox = self.FindWindowById(tool.GetId() + 100)
         slotbox.Clear()
-        tools = self.loadCrimpTools()
         toolRef = self.crimptool_alias[tool.GetStringSelection()]
-        slots = list(tools[toolRef]["Slots"])
+        slots = list(self.crimptools[toolRef]["slots"])
         slots.sort()
         for i, s in enumerate(slots):
 
@@ -237,17 +217,37 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
             with open(outfile, "r") as FSO:
                 return json.load(FSO)
 
-    def getReadableToolName(self, toolRef, toolInfo):
-        producer, crimp, producerNr = toolRef.split("#")
+    def getReadableToolName(self, toolRef):
+        toolInfo = self.crimptools[toolRef]
+        producer, series, producerNr = toolRef.split("#")
 
         if len(toolInfo["IDs"]) > 1:
             IDs = "(z.B. {0}, ...)".format(toolInfo["IDs"][0])
         else:
             IDs = "(z.B. {0})".format(toolInfo["IDs"][0])
 
-        readable = "{0} | {1} {2}".format(producer, crimp, IDs)
+        readable = "{0} | {1} {2}".format(producer, series, IDs)
         self.crimptool_alias[readable] = toolRef
         return readable
+
+    def saveContactInfo(self, contact):
+        outfile = os.path.join(self.data_directory, "crimpcontacts.json")
+
+        if not os.path.exists(outfile):
+            crimpcontacts = {}
+            crimpcontacts[contact["refNr"]] = contact
+            with open(outfile, "w") as FSO:
+                json.dump(crimpcontacts, FSO)
+
+        else:
+            with open(outfile, "r") as FSO:
+                crimpcontacts = json.load(FSO)
+                if self.old_contact and self.old_contact != contact["refNr"]:
+                    crimpcontacts.pop(self.old_contact)
+
+                crimpcontacts[contact["refNr"]] = contact
+            with open(outfile, "w") as FSO:
+                json.dump(crimpcontacts, FSO)
 
     def loadCrimpContact(self, contact=""):
         outfile = os.path.join(self.data_directory, "crimpcontacts.json")
@@ -266,7 +266,8 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
                 tool = crosssections[xs]["tool"]
                 slot = crosssections[xs]["slot"]
                 soll = crosssections[xs]["soll"]
-                self.lcCrimptools.Append([xs, tool, slot, soll])
+                self.lcCrimptools.Append([xs, self.getReadableToolName(tool),
+                                          slot, soll])
 
             self.old_contact = contact
 

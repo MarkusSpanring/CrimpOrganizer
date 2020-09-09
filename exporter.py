@@ -1,3 +1,4 @@
+import subprocess
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
@@ -8,10 +9,10 @@ from reportlab.lib.utils import simpleSplit
 from reportlab.lib import colors
 from datetime import datetime
 
-
 class CrimpInstructionPDF():
-    def __init__(self, outname="test.pdf"):
-        self.canvas = canvas.Canvas(outname, pagesize=A4)
+    def __init__(self, outfile="test.pdf"):
+        self.outfile  = outfile
+        self.canvas = canvas.Canvas(outfile, pagesize=A4)
         self.canvas.setLineWidth(.3)
         (self.pdf_width, self.pdf_height) = A4
         self.default_font = 'Helvetica'
@@ -162,9 +163,10 @@ class CrimpInstructionPDF():
             IDs = ", ".join(instructions[instruction]["IDs"])
             slot = instructions[instruction]["slot"]
             soll = instructions[instruction]["soll"]
+            producer = instructions[instruction]["producer"]
             tmpRow = [i, pos, name, contact, xs,
                       slot[0], slot[1],
-                      "detsch", IDs, soll, ""]
+                      producer, IDs, soll, ""]
             table.append(applyStyle(tmpRow, self.default_font, colspacing))
         return table
 
@@ -181,13 +183,14 @@ class CrimpInstructionPDF():
         self.drawSubHeader(start)
         self.drawInstruction(start, instructions=instructions)
         self.canvas.save()
+        subprocess.run(['open', self.outfile], check=True)
 
 
 def applyStyle(row, font, colspacing):
     tmpRow = []
     for i, cell in enumerate(row):
         for fontsize in [8, 7, 6, 5]:
-            lines = simpleSplit(str(cell), font, fontsize, colspacing[i] - 5)
+            lines = simpleSplit(str(cell), font, fontsize, colspacing[i])
 
             if len(lines) < 3 and ((len(lines) * fontsize * 1.2)) < 19:
                 style = ParagraphStyle(name='normal',
