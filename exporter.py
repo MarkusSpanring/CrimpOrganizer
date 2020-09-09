@@ -1,5 +1,6 @@
 import subprocess
 import os
+import sys
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
@@ -13,8 +14,9 @@ from datetime import datetime
 
 class CrimpInstructionPDF():
     def __init__(self, basedir, outfile="test.pdf"):
-        self.outfile = os.path.join(self.getOutdir(basedir), outfile)
-        self.canvas = canvas.Canvas(self.outfile, pagesize=A4)
+        self.outfile = outfile
+        outpath = os.path.join(self.getOutdir(basedir), outfile)
+        self.canvas = canvas.Canvas(outpath, pagesize=A4)
         self.canvas.setLineWidth(.3)
         (self.pdf_width, self.pdf_height) = A4
         self.default_font = 'Helvetica'
@@ -185,10 +187,15 @@ class CrimpInstructionPDF():
         self.drawSubHeader(start)
         self.drawInstruction(start, instructions=instructions)
         self.canvas.save()
-        # subprocess.run(['open', self.outfile], check=True)
+
+        startpath = os.path.join("data", "tmp", self.outfile)
+        if sys.platform.startswith("win32"):
+            subprocess.run(['start', startpath], check=True)
+        else:
+            subprocess.run(['open', startpath], check=True)
 
     def getOutdir(self, basedir):
-        outdir = os.path.join(basedir, "instructions")
+        outdir = os.path.join(basedir, "data", "tmp")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         return outdir
