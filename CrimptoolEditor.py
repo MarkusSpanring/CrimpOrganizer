@@ -242,7 +242,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
                 json.dump(self.crimptools, FSO, indent=4)
 
     def getOutdir(self):
-        outdir = os.path.join(self.data_directory, "crimptools")
+        outdir = os.path.join(self.data_directory, "data", "crimptools")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         return outdir

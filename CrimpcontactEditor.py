@@ -272,7 +272,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
             self.old_contact = contact
 
     def getOutdir(self):
-        outdir = os.path.join(self.data_directory, "crimpcontacts")
+        outdir = os.path.join(self.data_directory, "data", "crimpcontacts")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         return outdir
