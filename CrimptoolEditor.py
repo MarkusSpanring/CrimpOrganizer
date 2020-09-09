@@ -16,6 +16,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         CrimptoolEditorGUI.__init__(self, parent, *args, **kwds)
         self.SetTitle("Crimptool")
         self.defEntry = ["", "--Neue Zange--", ""]
+        self.old_ref = ""
         self.crimptools = {}
         self.data_directory = parent.data_directory
         self.loadCrimpInfo()  # Create new file if it does not exist
@@ -43,16 +44,21 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.fillCrimpToolBox()
 
     def onEditClicked(self, event):
+        infoscreen = {}
+        infoscreen["producer"] = self.tcProd.GetValue()
+        infoscreen["producerNr"] = self.tcProdNr.GetValue()
+        infoscreen["series"] = self.tcSeries.GetValue()
+
+        ref = "#".join([infoscreen["producer"],
+                        infoscreen["series"],
+                        infoscreen["producerNr"]])
+
         if self.btnEdit.GetLabel() == "Bearbeiten":
             self.enableInfoScreen()
+            self.old_ref = ref
             self.onInfoChanged(event)
 
         elif self.btnEdit.GetLabel() == "Speichern":
-            infoscreen = {}
-            infoscreen["producer"] = self.tcProd.GetValue()
-            infoscreen["producerNr"] = self.tcProdNr.GetValue()
-            infoscreen["series"] = self.tcSeries.GetValue()
-
             rows = self.lcSlots.GetItemCount()
             infoscreen["slots"] = []
             for row in range(rows):
@@ -67,15 +73,15 @@ class CrimptoolEditor(CrimptoolEditorGUI):
                 if ID:
                     infoscreen["IDs"].append(ID)
 
-            ref = "#".join([infoscreen["producer"],
-                            infoscreen["series"],
-                            infoscreen["producerNr"]])
-
+            if self.old_ref != ref:
+                self.crimptools.pop(self.old_ref)
             self.crimptools[ref] = infoscreen
+
             self.saveCrimpInfo()
             self.disableInfoScreen()
             self.fillCrimpToolBox()
             self.btnEdit.Disable()
+            self.old_ref = ""
 
     def onDeleteClicked(self, event):
         toolId = self.lcCrimpTools.GetFirstSelected()
