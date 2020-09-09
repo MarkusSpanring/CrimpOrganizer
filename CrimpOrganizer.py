@@ -223,6 +223,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
     def onSchemeNrChanged(self, event):
         schemeNr = self.tcSchemeNr.GetValue() == ""
         schemeRev = self.tcSchemeRev.GetValue() == ""
+        self.fillCrimpInstructions(searchpattern=self.tcSchemeNr.GetValue())
         if any([schemeNr, schemeRev]):
             self.btnCreateInstructions.Disable()
         else:
@@ -254,8 +255,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.lcContacts.Select(-1, 0)
         self.lcToolSummary.Select(-1, 0)
         self.lcToolSummary.DeleteAllItems()
-        self.tcSchemeNr.SetValue("")
-        self.tcSchemeRev.SetValue("")
         self.lcCrimpInstructions.DeleteAllItems()
         if instructions is not None:
             parent = obj.GetItemParent(obj.GetSelection())
@@ -273,6 +272,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.full_instructions = copy.deepcopy(instructions)
         else:
             self.full_instructions = {}
+            self.tcSchemeNr.SetValue("")
+            self.tcSchemeRev.SetValue("")
 
     def fillContacts(self, searchpattern=""):
         self.btnEditContact.Disable()
@@ -319,18 +320,25 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             os.makedirs(outdir)
         return os.path.join(outdir, file)
 
-    def fillCrimpInstructions(self, init=False):
+    def fillCrimpInstructions(self, init=False, searchpattern=""):
         instructions = self.loadCrimpInstructions()
         self.treeInstructions.DeleteAllItems()
         root = self.treeInstructions.AddRoot("Crimpanweisungen")
-        for schemeNr in instructions.keys():
+        found_match = False
+        for schemeNr in sorted(list(instructions.keys())):
+            if searchpattern and (searchpattern not in schemeNr):
+                continue
+            elif searchpattern and (searchpattern in schemeNr):
+                found_match = True
             nr = self.treeInstructions.AppendItem(root, schemeNr)
-            for schemeRev in instructions[schemeNr].keys():
+            for schemeRev in sorted(list(instructions[schemeNr].keys())):
                 rev = self.treeInstructions.AppendItem(nr, schemeRev)
-
                 data = instructions[schemeNr][schemeRev]
                 self.treeInstructions.SetItemData(rev, data)
-        self.treeInstructions.Expand(root)
+        if found_match:
+            self.treeInstructions.ExpandAll()
+        else:
+            self.treeInstructions.Expand(root)
 
     def loadCrimpInstructions(self):
         outdir = os.path.join(self.data_directory, "data", "instructions")
@@ -354,8 +362,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         if not os.path.exists(outfile):
             msg = '"{0}" ist eine neue Zeichnung. '.format(scheme)
             msg += 'Soll sie gespeichert werden?'
-            response = wx.MessageDialog(None, msg, 'Info',
-                                        wx.YES_NO | wx.ICON_INFORMATION | wx.CANCEL)
+            btns = wx.YES_NO | wx.ICON_INFORMATION | wx.CANCEL
+            response = wx.MessageDialog(None, msg, 'Info', btns)
             response.ShowModal()
 
         if response == wx.YES and self.full_instructions:
