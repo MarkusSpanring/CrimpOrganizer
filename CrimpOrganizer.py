@@ -308,8 +308,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
     def loadCrimpInstructions(self):
         outdir = os.path.join(self.data_directory, "data", "instructions")
+        instructions = {}
         if os.path.exists(outdir):
-            instructions = {}
             for d in os.listdir(outdir):
                 schemeNr, schemeRev = d.replace(".json", "").split("-")
                 if schemeNr not in instructions:
