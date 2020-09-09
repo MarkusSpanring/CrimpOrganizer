@@ -17,7 +17,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.SetTitle("Crimptool")
         self.defEntry = ["", "--Neue Zange--", ""]
         self.crimptools = {}
-        self.data_directory = os.getcwd()
+        self.data_directory = parent.data_directory
         self.loadCrimpInfo()  # Create new file if it does not exist
 
         self.btnEdit.Bind(wx.EVT_BUTTON, self.onEditClicked)
