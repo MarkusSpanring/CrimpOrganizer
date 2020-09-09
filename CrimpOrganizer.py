@@ -42,6 +42,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
         self.btnRemoveInstruction.Bind(wx.EVT_BUTTON,
                                        self.onRemoveInstructionClicked)
+        self.btnDeleteScheme.Bind(wx.EVT_BUTTON, self.onDeleteSchemeClicked)
+
         self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_SELECTED,
                                       self.onInstructionSelected)
         self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_DESELECTED,
@@ -220,9 +222,30 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.btnCreateInstructions.Disable()
             self.btnRemoveInstruction.Disable()
 
+    def onDeleteSchemeClicked(self, event):
+        schemeNr = self.tcSchemeNr.GetValue()
+        schemeRev = self.tcSchemeRev.GetValue()
+
+        scheme = "-".join([schemeNr, schemeRev]) + ".json"
+        folder = os.path.join(self.data_directory, "data", "instructions")
+        filename = os.path.join(folder, scheme)
+
+        if os.path.exists(filename):
+            msg = 'Really?! Soll die Anweisung für'
+            msg += ' "{0}-{1}" '.format(schemeNr, schemeRev)
+            msg += 'unwiderruflich gelöscht werden?'
+            response = wx.MessageBox(msg, 'Info', wx.YES_NO | wx.ICON_WARNING)
+            if response == wx.YES:
+                os.remove(filename)
+                self.tcSchemeNr.SetValue("")
+                self.tcSchemeRev.SetValue("")
+                self.lcCrimpInstructions.DeleteAllItems()
+                self.fillCrimpInstructions()
+
     def onSchemeNrChanged(self, event):
         schemeNr = self.tcSchemeNr.GetValue() == ""
         schemeRev = self.tcSchemeRev.GetValue() == ""
+        self.btnDeleteScheme.Disable()
         self.fillCrimpInstructions(searchpattern=self.tcSchemeNr.GetValue())
         if any([schemeNr, schemeRev]):
             self.btnCreateInstructions.Disable()
@@ -262,6 +285,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             schemeRev = obj.GetItemText(obj.GetSelection())
             self.tcSchemeNr.SetValue(schemeNr)
             self.tcSchemeRev.SetValue(schemeRev)
+            self.btnDeleteScheme.Enable()
             for instruction in instructions:
                 xs, contact = instruction.split("#")
                 pos = instructions[instruction]["pos"]
@@ -272,6 +296,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.full_instructions = copy.deepcopy(instructions)
         else:
             self.full_instructions = {}
+            self.btnDeleteScheme.Disable()
             self.tcSchemeNr.SetValue("")
             self.tcSchemeRev.SetValue("")
 
