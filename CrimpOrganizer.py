@@ -177,7 +177,11 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                 self.full_instructions[entry]["producer"] = producer
 
             for instruction in self.full_instructions:
-                self.lcCrimpInstructions.Append(instruction.split("#"))
+                xs, contact = instruction.split("#")
+                pos = self.full_instructions[instruction]["pos"]
+                name = self.full_instructions[instruction]["name"]
+                info = [pos, contact, xs, name]
+                self.lcCrimpInstructions.Append(info)
 
             schemeNr = self.tcSchemeNr.GetValue() != ""
             schemeRev = self.tcSchemeRev.GetValue() != ""
@@ -204,7 +208,11 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.full_instructions.pop(entry)
 
         for instruction in self.full_instructions:
-            self.lcCrimpInstructions.Append(instruction.split("#"))
+            xs, contact = instruction.split("#")
+            pos = self.full_instructions[instruction]["pos"]
+            name = self.full_instructions[instruction]["name"]
+            info = [pos, contact, xs, name]
+            self.lcCrimpInstructions.Append(info)
 
         if self.lcCrimpInstructions.GetItemCount() > 0:
             self.btnCreateInstructions.Enable()
@@ -237,6 +245,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                              instructions=self.full_instructions)
 
         self.saveCrimpInstructions(scheme)
+        pdfcreator.showPDF()
         event.Skip()
 
     def treeItemSelected(self, event):
@@ -245,6 +254,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.lcContacts.Select(-1, 0)
         self.lcToolSummary.Select(-1, 0)
         self.lcToolSummary.DeleteAllItems()
+        self.tcSchemeNr.SetValue("")
+        self.tcSchemeRev.SetValue("")
         self.lcCrimpInstructions.DeleteAllItems()
         if instructions is not None:
             parent = obj.GetItemParent(obj.GetSelection())
@@ -253,7 +264,12 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.tcSchemeNr.SetValue(schemeNr)
             self.tcSchemeRev.SetValue(schemeRev)
             for instruction in instructions:
-                self.lcCrimpInstructions.Append(instruction.split("#"))
+                xs, contact = instruction.split("#")
+                pos = instructions[instruction]["pos"]
+                name = instructions[instruction]["name"]
+                info = [pos, contact, xs, name]
+                self.lcCrimpInstructions.Append(info)
+
             self.full_instructions = copy.deepcopy(instructions)
         else:
             self.full_instructions = {}
@@ -336,10 +352,11 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
         response = wx.NO
         if not os.path.exists(outfile):
-            msg = '"{0}" ist eine neue Zeichnung.'.format(scheme)
+            msg = '"{0}" ist eine neue Zeichnung. '.format(scheme)
             msg += 'Soll sie gespeichert werden?'
-            response = wx.MessageBox(msg, 'Info',
-                                     wx.YES_NO | wx.ICON_WARNING | wx.CANCEL)
+            response = wx.MessageDialog(None, msg, 'Info',
+                                        wx.YES_NO | wx.ICON_INFORMATION | wx.CANCEL)
+            response.ShowModal()
 
         if response == wx.YES and self.full_instructions:
             with open(outfile, "w") as FSO:

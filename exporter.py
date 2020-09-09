@@ -188,6 +188,7 @@ class CrimpInstructionPDF():
         self.drawInstruction(start, instructions=instructions)
         self.canvas.save()
 
+    def showPDF(self):
         startpath = os.path.join("data", "tmp", self.outfile)
         if sys.platform.startswith("win32"):
             subprocess.call('start ' + startpath, shell=True)
