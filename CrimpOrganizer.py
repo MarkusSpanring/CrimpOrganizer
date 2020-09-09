@@ -274,24 +274,33 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             if searchresult:
                 self.lcContacts.Append([contact, producer, series])
 
+    # This has to go in a separate class
+    # It is redundant
     def loadCrimptools(self):
-        outfile = os.path.join(self.data_directory, "crimptools.json")
+        outfile = self.getFullPath("crimptools.json")
         if os.path.exists(outfile):
             with open(outfile, "r") as FSO:
                 return json.load(FSO)
 
     def loadCrimpcontacts(self):
-        outfile = os.path.join(self.data_directory, "crimpcontacts.json")
+        outfile = self.getFullPath("crimpcontacts.json")
         if os.path.exists(outfile):
             with open(outfile, "r") as FSO:
                 return json.load(FSO)
         return {}
 
     def saveCrimpcontacts(self):
-        outfile = os.path.join(self.data_directory, "crimpcontacts.json")
+        outfile = self.getFullPath("crimpcontacts.json")
         if os.path.exists(outfile):
             with open(outfile, "w") as FSO:
                 json.dump(self.crimpcontacts, FSO)
+
+    def getFullPath(self, file):
+        folder = file.replace(".json", "")
+        outdir = os.path.join(self.data_directory, "data", folder)
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        return os.path.join(outdir, file)
 
     def fillCrimpInstructions(self, init=False):
         instructions = self.loadCrimpInstructions()

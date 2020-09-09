@@ -226,7 +226,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         self.lcSlots.DeleteAllItems()
 
     def loadCrimpInfo(self):
-        outfile = os.path.join(self.data_directory, "crimptools.json")
+        outfile = os.path.join(self.getOutdir(), "crimptools.json")
         if not os.path.exists(outfile):
             with open(outfile, "w") as FSO:
                 json.dump({}, FSO, indent=4)
@@ -236,10 +236,16 @@ class CrimptoolEditor(CrimptoolEditorGUI):
                 self.crimptools = json.load(FSO)
 
     def saveCrimpInfo(self):
-        outfile = os.path.join(self.data_directory, "crimptools.json")
+        outfile = os.path.join(self.getOutdir(), "crimptools.json")
         if os.path.exists(outfile):
             with open(outfile, "w") as FSO:
                 json.dump(self.crimptools, FSO, indent=4)
+
+    def getOutdir(self):
+        outdir = os.path.join(self.data_directory, "crimptools")
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        return outdir
 
     def fillCrimpToolBox(self):
         self.lcCrimpTools.DeleteAllItems()
