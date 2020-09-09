@@ -231,7 +231,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         scheme = "-".join([schemeNr, schemeRev])
         details = self.OrderDetails.readInfoScreen()
         details.append(scheme)
-        pdfcreator = CrimpInstructionPDF()
+        pdfcreator = CrimpInstructionPDF(basedir=self.data_directory,
+                                         outfile="{0}.pdf".format(scheme))
         pdfcreator.createPDF(order_information=details,
                              instructions=self.full_instructions)
 

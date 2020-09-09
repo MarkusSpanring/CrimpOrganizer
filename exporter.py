@@ -1,4 +1,5 @@
 import subprocess
+import os
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
@@ -9,10 +10,11 @@ from reportlab.lib.utils import simpleSplit
 from reportlab.lib import colors
 from datetime import datetime
 
+
 class CrimpInstructionPDF():
-    def __init__(self, outfile="test.pdf"):
-        self.outfile  = outfile
-        self.canvas = canvas.Canvas(outfile, pagesize=A4)
+    def __init__(self, basedir, outfile="test.pdf"):
+        self.outfile = os.path.join(self.getOutdir(basedir), outfile)
+        self.canvas = canvas.Canvas(self.outfile, pagesize=A4)
         self.canvas.setLineWidth(.3)
         (self.pdf_width, self.pdf_height) = A4
         self.default_font = 'Helvetica'
@@ -183,7 +185,13 @@ class CrimpInstructionPDF():
         self.drawSubHeader(start)
         self.drawInstruction(start, instructions=instructions)
         self.canvas.save()
-        subprocess.run(['open', self.outfile], check=True)
+        # subprocess.run(['open', self.outfile], check=True)
+
+    def getOutdir(self, basedir):
+        outdir = os.path.join(basedir, "instructions")
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        return outdir
 
 
 def applyStyle(row, font, colspacing):
