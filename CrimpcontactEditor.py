@@ -212,7 +212,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         slotbox.Enable()
 
     def loadCrimpTools(self):
-        outfile = getAbsPath("crimptools.json")
+        outfile = self.getAbsPath("crimptools.json")
         if os.path.exists(outfile):
             with open(outfile, "r") as FSO:
                 return json.load(FSO)
@@ -231,7 +231,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         return readable
 
     def saveContactInfo(self, contact):
-        outfile = getAbsPath("crimpcontacts.json")
+        outfile = self.getAbsPath("crimpcontacts.json")
 
         if not os.path.exists(outfile):
             crimpcontacts = {}
@@ -250,7 +250,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
                 json.dump(crimpcontacts, FSO)
 
     def loadCrimpContact(self, contact=""):
-        outfile = getAbsPath("crimpcontacts.json")
+        outfile = self.getAbsPath("crimpcontacts.json")
         if os.path.exists(outfile) and contact:
             with open(outfile, "r") as FSO:
                 contacts = json.load(FSO)
