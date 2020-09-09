@@ -212,7 +212,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         slotbox.Enable()
 
     def loadCrimpTools(self):
-        outfile = os.path.join(self.getOutdir(), "crimptools.json")
+        outfile = getAbsPath("crimptools.json")
         if os.path.exists(outfile):
             with open(outfile, "r") as FSO:
                 return json.load(FSO)
@@ -231,7 +231,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         return readable
 
     def saveContactInfo(self, contact):
-        outfile = os.path.join(self.getOutdir(), "crimpcontacts.json")
+        outfile = getAbsPath("crimpcontacts.json")
 
         if not os.path.exists(outfile):
             crimpcontacts = {}
@@ -250,7 +250,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
                 json.dump(crimpcontacts, FSO)
 
     def loadCrimpContact(self, contact=""):
-        outfile = os.path.join(self.getOutdir(), "crimpcontacts.json")
+        outfile = getAbsPath("crimpcontacts.json")
         if os.path.exists(outfile) and contact:
             with open(outfile, "r") as FSO:
                 contacts = json.load(FSO)
@@ -271,11 +271,12 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
             self.old_contact = contact
 
-    def getOutdir(self):
-        outdir = os.path.join(self.data_directory, "data", "crimpcontacts")
+    def getAbsPath(self, filename):
+        folder = filename.replace(".json", "")
+        outdir = os.path.join(self.data_directory, "data", folder)
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        return outdir
+        return os.path.join(outdir, filename)
 
 class MyApp(wx.App):
     def OnInit(self):
