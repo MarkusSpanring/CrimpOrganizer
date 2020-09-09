@@ -190,7 +190,7 @@ class CrimpInstructionPDF():
 
         startpath = os.path.join("data", "tmp", self.outfile)
         if sys.platform.startswith("win32"):
-            subprocess.call(['start ' + startpath], shell=True)
+            subprocess.call('start ' + startpath, shell=True)
         else:
             subprocess.run(['open', startpath], check=True)
 
