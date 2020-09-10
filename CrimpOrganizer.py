@@ -382,16 +382,14 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         outfile = os.path.join(outdir, "{0}.json".format(scheme))
-
         response = wx.NO
         if not os.path.exists(outfile):
             msg = '"{0}" ist eine neue Zeichnung. '.format(scheme)
             msg += 'Soll sie gespeichert werden?'
             btns = wx.YES_NO | wx.ICON_INFORMATION | wx.CANCEL
-            response = wx.MessageDialog(None, msg, 'Info', btns)
-            response.ShowModal()
-
-        if response == wx.YES and self.full_instructions:
+            dial = wx.MessageDialog(None, msg, 'Info', btns)
+            response = dial.ShowModal()
+        if response == wx.ID_YES and self.full_instructions:
             with open(outfile, "w") as FSO:
                 json.dump(self.full_instructions, FSO)
         self.fillCrimpInstructions()

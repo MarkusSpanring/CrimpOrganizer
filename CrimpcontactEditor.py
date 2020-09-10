@@ -39,26 +39,6 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         self.lcCrimptools.Bind(wx.EVT_LIST_ITEM_DESELECTED,
                                self.onEntrySelected)
 
-        # self.Bind(wx.EVT_MAXIMIZE, self.onResize)
-        # self.Bind(wx.EVT_SIZE, self.onResize)
-
-    def onResize(self, event):
-        width, height = self.GetSize()
-        if width < (1.5 * self.width):
-            font = wx.Font(13, wx.FONTFAMILY_DEFAULT,
-                           wx.FONTSTYLE_NORMAL,
-                           wx.FONTWEIGHT_NORMAL, False)
-            self.lcCrimptools.SetFont(font)
-            self.lcCrimptools.SetColumnWidth(1, 600)
-        else:
-            font = wx.Font(10, wx.FONTFAMILY_DEFAULT,
-                           wx.FONTSTYLE_NORMAL,
-                           wx.FONTWEIGHT_NORMAL, False)
-            self.lcCrimptools.SetFont(font)
-            self.lcCrimptools.SetColumnWidth(1, 400)
-        event.Skip()
-        print(self.GetSize())
-
     def onSaveClicked(self, event):
         refNr = self.tcRefNr.GetValue()
         contactSeries = self.tcSeries.GetValue()
