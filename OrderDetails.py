@@ -12,8 +12,10 @@ class OrderDetails(OrderDetailsGUI):
         self.tcProtocolNr.Bind(wx.EVT_TEXT, self.onDetailsChanged)
         self.btnPrint.Bind(wx.EVT_BUTTON, self.onPrintClicked)
 
+        self.details_given = False
+
     def onDetailsChanged(self, event):
-        detailscreen = self.readInfoScreen()
+        detailscreen = self.readInfoScreen(internal=True)
 
         completeInfo = []
         for i in detailscreen:
@@ -25,14 +27,16 @@ class OrderDetails(OrderDetailsGUI):
             self.btnPrint.Disable()
 
     def onPrintClicked(self, event):
+        self.details_given = True
         self.Close()
 
-    def readInfoScreen(self):
+    def readInfoScreen(self, internal=False):
         detailscreen = []
-        detailscreen.append(self.tcOrderNr.GetValue())
-        detailscreen.append(self.tcJobNr.GetValue())
-        detailscreen.append(self.tcReceiptNr.GetValue())
-        detailscreen.append(self.tcProtocolNr.GetValue())
+        if self.details_given or internal:
+            detailscreen.append(self.tcOrderNr.GetValue())
+            detailscreen.append(self.tcJobNr.GetValue())
+            detailscreen.append(self.tcReceiptNr.GetValue())
+            detailscreen.append(self.tcProtocolNr.GetValue())
 
         return detailscreen
 

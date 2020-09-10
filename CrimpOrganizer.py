@@ -262,14 +262,15 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         schemeRev = self.tcSchemeRev.GetValue()
         scheme = "-".join([schemeNr, schemeRev])
         details = self.OrderDetails.readInfoScreen()
-        details.append(scheme)
-        pdfcreator = CrimpInstructionPDF(basedir=self.data_directory,
-                                         outfile="{0}.pdf".format(scheme))
-        pdfcreator.createPDF(order_information=details,
-                             instructions=self.full_instructions)
+        if details:
+            details.append(scheme)
+            pdfcreator = CrimpInstructionPDF(basedir=self.data_directory,
+                                             outfile="{0}.pdf".format(scheme))
+            pdfcreator.createPDF(order_information=details,
+                                 instructions=self.full_instructions)
 
-        self.saveCrimpInstructions(scheme)
-        pdfcreator.showPDF()
+            self.saveCrimpInstructions(scheme)
+            pdfcreator.showPDF()
         event.Skip()
 
     def treeItemSelected(self, event):
