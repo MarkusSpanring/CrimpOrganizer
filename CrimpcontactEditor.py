@@ -202,7 +202,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         producer, series, producerNr = toolRef.split("#")
 
         if len(toolInfo["IDs"]) > 1:
-            IDs = "(z.B. {0}, ...)".format(toolInfo["IDs"][0])
+            IDs = "(z.B. {0})".format(", ".join(toolInfo["IDs"]))
         else:
             IDs = "(z.B. {0})".format(toolInfo["IDs"][0])
 
