@@ -39,9 +39,29 @@ class CrimpInstructionPDF():
         self.canvas.drawImage("ewolf.png", self.pdf_width - 150 - self.border,
                               753, height=55, width=160)
 
+    def drawInstructionType(self):
+        fontsize = 8
+        start = 715
+        option1 = "WERKZEUGFESTLEGUNG"
+        option2 = u"ERSTPRÜFUNG"
+        option3 = "FORTLAUFENDE PRÜFUNG"
+        option4 = "PRÜFANWEISUNG N40126R12"
+        self.canvas.setFont(self.default_font, fontsize)
+        self.canvas.rect(self.border, start, 8, 8, fill=0)
+        self.canvas.drawString(self.border + 12, start+1, option1)
+        offset = self.border + 38 + stringWidth(option1, self.default_font, fontsize)
+        self.canvas.rect(offset, start, 8, 8, fill=0)
+        self.canvas.drawString(offset + 12, start+1, option2)
+        offset = offset + 38 + stringWidth(option2, self.default_font, fontsize)
+        self.canvas.rect(offset, start, 8, 8, fill=0)
+        self.canvas.drawString(offset + 12, start+1, option3)
+        offset = offset + 38 + stringWidth(option3, self.default_font, fontsize)
+        self.canvas.rect(offset, start, 8, 8, fill=0)
+        self.canvas.drawString(offset + 12, start+1, option4)
+
     def addCustomer(self):
         fontsize = 11
-        start = 700
+        start = 680
         self.canvas.setFont(self.default_bold, fontsize)
         line1 = "Knorr-Bremse GmbH"
         line2 = "Division IFE Automatic Door Systems"
@@ -75,7 +95,7 @@ class CrimpInstructionPDF():
                                description)
 
     def drawInformation(self, order_information=[]):
-        start = 530
+        start = 510
         data = [['Bestellnummer:', ''],
                 ["Auftragsnummer:", ""],
                 ["Belegnummer:", ""],
@@ -202,10 +222,11 @@ class CrimpInstructionPDF():
 
     def createPDF(self, order_information=[], instructions=[]):
         self.addHeader()
+        self.drawInstructionType()
         self.addCustomer()
         self.drawInformation(order_information=order_information)
 
-        start = 500
+        start = 480
         self.drawHeader(start)
         self.drawSubHeader(start)
         self.drawInstruction(start, instructions=instructions)
