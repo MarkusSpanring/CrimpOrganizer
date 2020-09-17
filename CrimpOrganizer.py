@@ -241,6 +241,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                 self.tcSchemeRev.SetValue("")
                 self.lcCrimpInstructions.DeleteAllItems()
                 self.fillCrimpInstructions()
+                self.full_instructions = {}
 
     def onSchemeNrChanged(self, event):
         schemeNr = self.tcSchemeNr.GetValue() == ""
