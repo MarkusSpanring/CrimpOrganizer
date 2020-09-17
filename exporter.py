@@ -41,7 +41,7 @@ class CrimpInstructionPDF():
 
     def drawInstructionType(self):
         fontsize = 8
-        start = 715
+        start = 720
         option1 = "WERKZEUGFESTLEGUNG"
         option2 = u"ERSTPRÜFUNG"
         option3 = "FORTLAUFENDE PRÜFUNG"
@@ -49,15 +49,16 @@ class CrimpInstructionPDF():
         self.canvas.setFont(self.default_font, fontsize)
         self.canvas.rect(self.border, start, 8, 8, fill=0)
         self.canvas.drawString(self.border + 12, start+1, option1)
-        offset = self.border + 38 + stringWidth(option1, self.default_font, fontsize)
+        offset = self.border + 90 + stringWidth(option1, self.default_font, fontsize)
         self.canvas.rect(offset, start, 8, 8, fill=0)
         self.canvas.drawString(offset + 12, start+1, option2)
-        offset = offset + 38 + stringWidth(option2, self.default_font, fontsize)
+        offset = offset + 90 + stringWidth(option2, self.default_font, fontsize)
         self.canvas.rect(offset, start, 8, 8, fill=0)
         self.canvas.drawString(offset + 12, start+1, option3)
-        offset = offset + 38 + stringWidth(option3, self.default_font, fontsize)
-        self.canvas.rect(offset, start, 8, 8, fill=0)
-        self.canvas.drawString(offset + 12, start+1, option4)
+
+
+        self.canvas.rect(self.border, start-15, 8, 8, fill=0)
+        self.canvas.drawString(self.border + 12, start-14, option4)
 
     def addCustomer(self):
         fontsize = 11
