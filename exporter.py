@@ -157,6 +157,29 @@ class CrimpInstructionPDF():
         t.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
         t.drawOn(self.canvas, self.border, start)
 
+    def drawSignatureLine(self):
+        fontsize = 9
+        start = 50
+        self.canvas.line(self.border, start,
+                         self.pdf_width - self.border, start)
+
+        name = "Name"
+        date = "Datum"
+        signature = "Unterschrift"
+        fontsize = fontsize - 1
+        self.canvas.setFont(self.default_font, fontsize)
+        self.canvas.drawString(self.border,
+                               start - self.heightOffset(fontsize),
+                               name)
+
+        self.canvas.drawString(self.border+190,
+                               start - self.heightOffset(fontsize),
+                               date)
+
+        self.canvas.drawString(self.border+290,
+                               start - self.heightOffset(fontsize),
+                               signature)
+
     def unrollInstructions(self, instructions, colspacing):
         table = []
 
@@ -186,6 +209,7 @@ class CrimpInstructionPDF():
         self.drawHeader(start)
         self.drawSubHeader(start)
         self.drawInstruction(start, instructions=instructions)
+        self.drawSignatureLine()
         self.canvas.save()
 
     def showPDF(self):
@@ -225,11 +249,11 @@ def applyStyle(row, font, colspacing):
 
 
 def main():
-    pdf = CrimpInstructionPDF()
-    instructions = {"1#ML / 3ED10025234R51":{"pos":"3","name":"4","IDs":["Z123456","Z789012","Z987654","Z456987"],"slot":["","10-16"],"soll":"8"},
-                    "1#3ED10025234R51 / 3ED10025234R51":{"pos":"3","name":"4","IDs":["Z123456","Z789012","Z987654"],"slot":["22-20",""],"soll":"8"},
-                    "1#MNL / 3ED10025234R53":{"pos":"3","name":"4","IDs":["Z123456","Z789012"],"slot":["22-20","10-16"],"soll":"8"},
-                    "1#3ED10025234R54":{"pos":"3","name":"4","IDs":["Z123456"],"slot":["22-20","1.50 - 1.60"],"soll":"8"}}
+    pdf = CrimpInstructionPDF(os.getcwd())
+    instructions = {"1#ML / 3ED10025234R51":{"pos":"3","name":"4", "producer":"A", "IDs":["Z123456","Z789012","Z987654","Z456987"],"slot":["","10-16"],"soll":"8"},
+                    "1#3ED10025234R51 / 3ED10025234R51":{"pos":"3","name":"4", "producer":"A","IDs":["Z123456","Z789012","Z987654"],"slot":["22-20",""],"soll":"8"},
+                    "1#MNL / 3ED10025234R53":{"pos":"3","name":"4", "producer":"A","IDs":["Z123456","Z789012"],"slot":["22-20","10-16"],"soll":"8"},
+                    "1#3ED10025234R54":{"pos":"3","name":"4", "producer":"A","IDs":["Z123456"],"slot":["22-20","1.50 - 1.60"],"soll":"8"}}
     pdf.createPDF(instructions=instructions)
 
 
