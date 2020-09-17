@@ -206,14 +206,15 @@ class CrimpInstructionPDF():
 
         for i, instruction in enumerate(instructions.keys()):
             xs, contact = instruction.split("#")
+            series = instructions[instruction]["series"]
             pos = instructions[instruction]["pos"]
             name = instructions[instruction]["name"]
             IDs = ", ".join(instructions[instruction]["IDs"])
             slot = instructions[instruction]["slot"]
             soll = instructions[instruction]["soll"]
             producer = instructions[instruction]["producer"]
-            tmpRow = [i, pos, name, contact, xs,
-                      slot[0], slot[1],
+            tmpRow = [i, pos, name, " / ".join([contact, series]),
+                      xs, slot[0], slot[1],
                       producer, IDs, soll, ""]
             table.append(applyStyle(tmpRow, self.default_font, colspacing))
         return table
