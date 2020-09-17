@@ -203,8 +203,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
     def onRemoveInstructionClicked(self, event):
         instruction_id = self.lcCrimpInstructions.GetFirstSelected()
-        xs = self.lcCrimpInstructions.GetItem(instruction_id, 0).GetText()
         contact = self.lcCrimpInstructions.GetItem(instruction_id, 1).GetText()
+        xs = self.lcCrimpInstructions.GetItem(instruction_id, 2).GetText()
         entry = "#".join([xs, contact])
         self.lcCrimpInstructions.DeleteAllItems()
         self.full_instructions.pop(entry)
