@@ -42,6 +42,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
         self.btnRemoveInstruction.Bind(wx.EVT_BUTTON,
                                        self.onRemoveInstructionClicked)
+        self.btnReannotate.Bind(wx.EVT_BUTTON,
+                                self.onReannotateClicked)
         self.btnDeleteScheme.Bind(wx.EVT_BUTTON, self.onDeleteSchemeClicked)
 
         self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_SELECTED,
@@ -221,6 +223,15 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         else:
             self.btnCreateInstructions.Disable()
             self.btnRemoveInstruction.Disable()
+
+    def onReannotateClicked(self, event):
+        self.selected_instruction = []
+        for instruction in self.full_instructions.keys():
+            self.selected_instruction.append(instruction)
+
+        self.AnnotateContacts = AnnotateContacts(self, identifiers=self.full_instructions.keys())
+        self.AnnotateContacts.Bind(wx.EVT_CLOSE, self.onContactsAnnotated)
+        self.AnnotateContacts.Show()
 
     def onDeleteSchemeClicked(self, event):
         schemeNr = self.tcSchemeNr.GetValue()
