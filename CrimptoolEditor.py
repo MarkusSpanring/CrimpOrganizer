@@ -74,7 +74,7 @@ class CrimptoolEditor(CrimptoolEditorGUI):
                 if ID:
                     infoscreen["IDs"].append(ID)
 
-            if self.old_ref != ref:
+            if self.old_ref and self.old_ref != ref:
                 self.crimptools.pop(self.old_ref)
             self.crimptools[ref] = infoscreen
 
