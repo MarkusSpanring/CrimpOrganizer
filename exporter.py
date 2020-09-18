@@ -75,7 +75,7 @@ class CrimpInstructionPDF():
         self.canvas.setFont(self.default_font, fontsize)
         line1 = "33a Straße 1"
         line2 = "A-3331 Kematen/Ybbs"
-        line2_date = "Datum: {0}".format(datetime.now().strftime("%d.%m.%Y"))
+        line2_date = "Erstelldatum: {0}".format(datetime.now().strftime("%d.%m.%Y"))
         self.canvas.drawString(self.border, start, line1)
         self.canvas.drawString(self.border,
                                start - self.heightOffset(fontsize), line2)
@@ -99,7 +99,6 @@ class CrimpInstructionPDF():
         start = 510
         data = [['Bestellnummer:', ''],
                 ["Auftragsnummer:", ""],
-                ["Belegnummer:", ""],
                 ["Protokollnummer:", ""],
                 ["Zeichnungsnummer:", "ED002020R15"]]
         if order_information:
