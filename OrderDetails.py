@@ -9,7 +9,6 @@ class OrderDetails(OrderDetailsGUI):
         self.tcOrderNr.Bind(wx.EVT_TEXT, self.onDetailsChanged)
         self.tcJobNr.Bind(wx.EVT_TEXT, self.onDetailsChanged)
         self.tcReceiptNr.Bind(wx.EVT_TEXT, self.onDetailsChanged)
-        self.tcProtocolNr.Bind(wx.EVT_TEXT, self.onDetailsChanged)
         self.btnPrint.Bind(wx.EVT_BUTTON, self.onPrintClicked)
 
         self.details_given = False
@@ -36,7 +35,6 @@ class OrderDetails(OrderDetailsGUI):
             detailscreen.append(self.tcOrderNr.GetValue())
             detailscreen.append(self.tcJobNr.GetValue())
             detailscreen.append(self.tcReceiptNr.GetValue())
-            detailscreen.append(self.tcProtocolNr.GetValue())
 
         return detailscreen
 
