@@ -115,7 +115,7 @@ class CrimpInstructionPDF():
 
     def drawHeader(self, start):
         header = [["Draht", "Pos.", "Gehäuse", "Crimpung",
-                   "Quersch.", "Einsatz", "Zange", "Wert"]]
+                   "Quersch.", "Einsatz", u"Zange¹", "Wert"]]
 
         colspacing = [35, 32, 55, 100, 50, 75, 105, 55]
         h = Table(header, colspacing, 16)
@@ -176,6 +176,13 @@ class CrimpInstructionPDF():
 
         t.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
         t.drawOn(self.canvas, self.border, start)
+
+        info = u"¹) Nicht verwendete Zange durchstreichen"
+        fontsize = 7
+        self.canvas.setFont(self.default_font, fontsize)
+        self.canvas.drawString(self.border,
+                               start - self.heightOffset(fontsize),
+                               info)
 
     def drawSignatureLine(self):
         fontsize = 9
@@ -272,10 +279,10 @@ def applyStyle(row, font, colspacing):
 
 def main():
     pdf = CrimpInstructionPDF(os.getcwd())
-    instructions = {"1#ML / 3ED10025234R51":{"pos":"3","name":"4", "producer":"A", "IDs":["Z123456","Z789012","Z987654","Z456987"],"slot":["","10-16"],"soll":"8"},
-                    "1#3ED10025234R51 / 3ED10025234R51":{"pos":"3","name":"4", "producer":"A","IDs":["Z123456","Z789012","Z987654"],"slot":["22-20",""],"soll":"8"},
-                    "1#MNL / 3ED10025234R53":{"pos":"3","name":"4", "producer":"A","IDs":["Z123456","Z789012"],"slot":["22-20","10-16"],"soll":"8"},
-                    "1#3ED10025234R54":{"pos":"3","name":"4", "producer":"A","IDs":["Z123456"],"slot":["22-20","1.50 - 1.60"],"soll":"8"}}
+    instructions = {"1#3ED10025234R51":{"pos":"3","name":"4", "series":"MNL", "producer":"A", "IDs":["Z123456","Z789012","Z987654","Z456987"],"slot":["","10-16"],"soll":"8"},
+                    "1#3ED10025234R51 / 3ED10025234R51":{"pos":"3","name":"4", "series":"MNL", "producer":"A","IDs":["Z123456","Z789012","Z987654"],"slot":["22-20",""],"soll":"8"},
+                    "1#3ED10025234R53":{"pos":"3","name":"4", "series":"MNL", "producer":"A","IDs":["Z123456","Z789012"],"slot":["22-20","10-16"],"soll":"8"},
+                    "1#3ED10025234R54":{"pos":"3","name":"4", "series":"MNL", "producer":"A","IDs":["Z123456"],"slot":["22-20","1.50 - 1.60"],"soll":"8"}}
     pdf.createPDF(instructions=instructions)
 
 
