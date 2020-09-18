@@ -324,9 +324,9 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             producer = self.crimpcontacts[contact]["producer"]
             series = self.crimpcontacts[contact]["series"]
 
-            searchresult = any([searchpattern in contact,
-                                searchpattern in producer,
-                                searchpattern in series
+            searchresult = any([searchpattern.lower() in contact.lower(),
+                                searchpattern.lower() in producer.lower(),
+                                searchpattern.lower() in series.lower()
                                 ])
             if searchresult:
                 self.lcContacts.Append([contact, producer, series])
