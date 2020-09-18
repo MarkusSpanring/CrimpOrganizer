@@ -100,7 +100,7 @@ class CrimpInstructionPDF():
         data = [['Bestellnummer:', ''],
                 ["Auftragsnummer:", ""],
                 ["Protokollnummer:", ""],
-                ["Zeichnungsnummer:", "ED002020R15"]]
+                ["Zeichnungsnummer:", ""]]
         if order_information:
             for i, entry in enumerate(order_information):
                 data[i][1] = entry
@@ -108,7 +108,8 @@ class CrimpInstructionPDF():
         f = Table(data, None, 16)
         f.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 0.5, colors.black),
                                ('FONTSIZE', (0, 0), (-1, -1), 9),
-                               ('ALIGN', (1, 0), (1, -1), 'RIGHT')]))
+                               ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+                               ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')]))
 
         f.wrapOn(self.canvas, self.pdf_width, self.pdf_height)
         f.drawOn(self.canvas, self.border, start)
