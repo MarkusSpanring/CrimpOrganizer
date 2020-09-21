@@ -229,7 +229,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         for instruction in self.full_instructions.keys():
             self.selected_instruction.append(instruction)
 
-        self.AnnotateContacts = AnnotateContacts(self, identifiers=self.full_instructions.keys())
+        identifiers = self.full_instructions.keys()
+        self.AnnotateContacts = AnnotateContacts(self, identifiers=identifiers)
         self.AnnotateContacts.Bind(wx.EVT_CLOSE, self.onContactsAnnotated)
         self.AnnotateContacts.Show()
 
