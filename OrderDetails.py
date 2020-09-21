@@ -10,6 +10,7 @@ class OrderDetails(OrderDetailsGUI):
         self.tcJobNr.Bind(wx.EVT_TEXT, self.onDetailsChanged)
         self.tcProtocolNr.Bind(wx.EVT_TEXT, self.onDetailsChanged)
         self.btnPrint.Bind(wx.EVT_BUTTON, self.onPrintClicked)
+        self.btnSave.Bind(wx.EVT_BUTTON, self.onSaveClicked)
 
         self.details_given = False
 
@@ -29,12 +30,17 @@ class OrderDetails(OrderDetailsGUI):
         self.details_given = True
         self.Close()
 
+    def onSaveClicked(self, event):
+        self.Close()
+
     def readInfoScreen(self, internal=False):
         detailscreen = []
         if self.details_given or internal:
             detailscreen.append(self.tcOrderNr.GetValue())
             detailscreen.append(self.tcJobNr.GetValue())
             detailscreen.append(self.tcProtocolNr.GetValue())
+        else:
+            detailscreen = ["", "", ""]
 
         return detailscreen
 

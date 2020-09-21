@@ -283,7 +283,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                                  instructions=self.full_instructions)
 
             self.saveCrimpInstructions(scheme)
-            pdfcreator.showPDF()
+            if self.OrderDetails.details_given:
+                pdfcreator.showPDF()
         event.Skip()
 
     def treeItemSelected(self, event):
