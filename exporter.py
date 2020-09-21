@@ -13,10 +13,10 @@ from datetime import datetime
 
 
 class CrimpInstructionPDF():
-    def __init__(self, basedir, outfile="test.pdf"):
+    def __init__(self, outdir, outfile="test.pdf"):
         self.outfile = outfile
-        outpath = os.path.join(self.getOutdir(basedir), outfile)
-        self.canvas = canvas.Canvas(outpath, pagesize=A4)
+        self.outpath = os.path.join(outdir, outfile)
+        self.canvas = canvas.Canvas(self.outpath, pagesize=A4)
         self.canvas.setLineWidth(.3)
         (self.pdf_width, self.pdf_height) = A4
         self.default_font = 'Helvetica'
@@ -95,14 +95,14 @@ class CrimpInstructionPDF():
                                start - self.heightOffset(fontsize),
                                description)
 
-    def drawInformation(self, order_information=[]):
+    def drawInformation(self, order_details=[]):
         start = 510
-        data = [['Bestellnummer:', ''],
+        data = [["Bestellnummer:", ""],
                 ["Auftragsnummer:", ""],
                 ["Protokollnummer:", ""],
                 ["Zeichnungsnummer:", ""]]
-        if order_information:
-            for i, entry in enumerate(order_information):
+        if order_details:
+            for i, entry in enumerate(order_details):
                 data[i][1] = entry
 
         f = Table(data, None, 16)
@@ -229,11 +229,11 @@ class CrimpInstructionPDF():
     def heightOffset(self, fontsize):
         return fontsize + fontsize * 0.2
 
-    def createPDF(self, order_information=[], instructions=[]):
+    def createPDF(self, order_details=[], instructions=[]):
         self.addHeader()
         self.drawInstructionType()
         self.addCustomer()
-        self.drawInformation(order_information=order_information)
+        self.drawInformation(order_details=order_details)
 
         start = 480
         self.drawHeader(start)
@@ -243,17 +243,11 @@ class CrimpInstructionPDF():
         self.canvas.save()
 
     def showPDF(self):
-        startpath = os.path.join("data", "tmp", self.outfile)
+        startpath = "data" + self.outpath.split("data")[-1]
         if sys.platform.startswith("win32"):
             subprocess.call('start ' + startpath, shell=True)
         else:
             subprocess.run(['open', startpath], check=True)
-
-    def getOutdir(self, basedir):
-        outdir = os.path.join(basedir, "data", "tmp")
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-        return outdir
 
 
 def applyStyle(row, font, colspacing):
