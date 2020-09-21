@@ -220,7 +220,7 @@ class CrimpInstructionPDF():
             slot = instructions[instruction]["slot"]
             soll = instructions[instruction]["soll"]
             producer = instructions[instruction]["producer"]
-            tmpRow = [i, pos, name, " / ".join([contact, series]),
+            tmpRow = [i+1, pos, name, " / ".join([contact, series]),
                       xs, slot[0], slot[1],
                       producer, IDs, soll, ""]
             table.append(applyStyle(tmpRow, self.default_font, colspacing))
