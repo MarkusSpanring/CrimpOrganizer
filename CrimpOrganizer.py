@@ -301,6 +301,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.tcSchemeNr.SetValue(schemeNr)
             self.tcSchemeRev.SetValue(schemeRev)
             self.btnDeleteScheme.Enable()
+            self.btnReannotate.Enable()
             for instruction in instructions:
                 xs, contact = instruction.split("#")
                 pos = instructions[instruction]["pos"]
@@ -312,6 +313,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         else:
             self.full_instructions = {}
             self.btnDeleteScheme.Disable()
+            self.btnReannotate.Disable()
             self.tcSchemeNr.SetValue("")
             self.tcSchemeRev.SetValue("")
 
