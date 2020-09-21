@@ -57,6 +57,18 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
         self.treeInstructions.Bind(wx.EVT_TREE_SEL_CHANGED,
                                    self.treeItemSelected)
+        self.optFile.Bind(wx.EVT_MENU, self.onSettingsClicked)
+        self.optOrder.Bind(wx.EVT_MENU, self.onOpenOrdersClicked)
+
+    def onSettingsClicked(self, event):
+        msg = 'Coming soon'
+        dial = wx.MessageDialog(None, msg, 'Info', wx.OK)
+        dial.ShowModal()
+        event.Skip()
+
+    def onOpenOrdersClicked(self, event):
+        print("order")
+        event.Skip()
 
     def onNewContactClicked(self, event):
         self.CrimpcontactEditor = CrimpcontactEditor(self, preload="")
