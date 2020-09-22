@@ -235,13 +235,13 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
             with open(outfile, "r") as FSO:
                 contacts = json.load(FSO)
 
-            self.tcRefNr.SetValue(contacts[contact]["refNr"])
-            self.tcSeries.SetValue(contacts[contact]["series"])
-            self.tcProducer.SetValue(contacts[contact]["producer"])
-            self.tcProducerNr.SetValue(contacts[contact]["producerNr"])
+            self.tcRefNr.SetValue(contacts[contact].get("refNr", ""))
+            self.tcSeries.SetValue(contacts[contact].get("series", ""))
+            self.tcProducer.SetValue(contacts[contact].get("producer", ""))
+            self.tcProducerNr.SetValue(contacts[contact].get("producerNr", ""))
 
             self.lcCrimptools.DeleteAllItems()
-            crosssections = contacts[contact]["crosssection"]
+            crosssections = contacts[contact].get("crosssection", {})
             for xs in sorted(crosssections.keys()):
                 tool = crosssections[xs]["tool"]
                 slot = crosssections[xs]["slot"]

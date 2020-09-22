@@ -121,13 +121,13 @@ class CrimptoolEditor(CrimptoolEditorGUI):
         elif toolId != -1:
             self.clearInfoScreen()
             infoscreen = self.crimptools[toolRef]
-            self.tcProd.SetValue(infoscreen["producer"])
-            self.tcProdNr.SetValue(infoscreen["producerNr"])
-            self.tcSeries.SetValue(infoscreen["series"])
-            for slot in infoscreen["slots"]:
+            self.tcProd.SetValue(infoscreen.get("producer", ""))
+            self.tcProdNr.SetValue(infoscreen.get("producerNr", ""))
+            self.tcSeries.SetValue(infoscreen.get("series", ""))
+            for slot in infoscreen.get("slots", []):
                 self.lcSlots.Append(slot)
 
-            for ID in infoscreen["IDs"]:
+            for ID in infoscreen.get("IDs", []):
                 self.lbToolIDs.Append(ID)
             self.btnEdit.Enable()
             self.btnDelete.Enable()
