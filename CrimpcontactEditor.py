@@ -12,9 +12,8 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
         self.data_directory = parent.data_directory
         self.old_contact = ""
-        self.xSections = ["0.25", "0.34", "0.50",
-                          "0.75", "1.00", "1.50", "2.50",
-                          "1.00+1.00", "1.50+1.50", "1.00+1.50"]
+        self.loadXsectionSollValues()
+
         self.width, self.height = self.GetSize()
         self.crimptool_alias = {}
 
@@ -153,7 +152,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
     def fillXSectionBox(self):
         self.cbXSection.Clear()
-        for xs in self.xSections:
+        for xs, osoll, csoll in self.xsec_soll_values:
             self.cbXSection.Append(xs)
 
     def fillToolBox(self, selection=""):
@@ -251,12 +250,25 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
             self.old_contact = contact
 
+    def loadXsectionSollValues(self):
+        settings_path = os.path.join(self.data_directory, "settings.json")
+        if not os.path.exists(settings_path):
+            msg = 'Keine Einstellungen gefunden. '
+            msg += 'Bitte öffne das Einstellungsmenü.'
+            dial = wx.MessageDialog(None, msg, 'Info', wx.OK)
+            dial.ShowModal()
+            self.Close()
+
+        with open(settings_path, "r") as FSO:
+            self.xsec_soll_values = json.load(FSO)["xsec_soll_values"]
+
     def getAbsPath(self, filename):
         folder = filename.replace(".json", "")
         outdir = os.path.join(self.data_directory, "data", folder)
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         return os.path.join(outdir, filename)
+
 
 class MyApp(wx.App):
     def OnInit(self):

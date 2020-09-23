@@ -8,6 +8,7 @@ from CrimpcontactEditor import CrimpcontactEditor
 from AnnotateContacts import AnnotateContacts
 from OrderDetails import OrderDetails
 from exporter import CrimpInstructionPDF
+from SettingsDialog import SettingsDialog
 
 
 class CrimpOrganizer(CrimpOrganizerGUI):
@@ -60,11 +61,14 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.optFile.Bind(wx.EVT_MENU, self.onSettingsClicked)
         self.optOrder.Bind(wx.EVT_MENU, self.onOpenOrdersClicked)
 
+        settings_path = os.path.join(self.data_directory, "settings.json")
+        if not os.path.exists(settings_path):
+            self.onSettingsClicked(None)
+
     def onSettingsClicked(self, event):
-        msg = 'Coming soon'
-        dial = wx.MessageDialog(None, msg, 'Info', wx.OK)
-        dial.ShowModal()
-        event.Skip()
+        self.SettingsDialog = SettingsDialog(self)
+        # self.SettingsDialog.Bind(wx.EVT_CLOSE, self.onContactsAnnotated)
+        self.SettingsDialog.Show()
 
     def onOpenOrdersClicked(self, event):
         print("order")
