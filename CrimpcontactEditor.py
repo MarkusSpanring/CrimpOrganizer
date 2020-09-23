@@ -18,18 +18,21 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         self.crimptool_alias = {}
 
         self.crimptools = self.loadCrimpTools()
-        self.fillXSectionBox()
         self.loadCrimpContact(contact=preload)
+        self.fillXSectionBox()
 
         self.btnSave.Bind(wx.EVT_BUTTON, self.onSaveClicked)
 
         self.tcRefNr.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcSeries.Bind(wx.EVT_TEXT, self.onInfoChanged)
+        self.rbOpenContact.Bind(wx.EVT_RADIOBUTTON, self.onCrimptypeSelected)
+        self.rbClosedContact.Bind(wx.EVT_RADIOBUTTON, self.onCrimptypeSelected)
         self.tcProducer.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.tcProducerNr.Bind(wx.EVT_TEXT, self.onInfoChanged)
 
         self.cbXSection.Bind(wx.EVT_COMBOBOX, self.onCrosssectionSelected)
         self.cbTool.Bind(wx.EVT_COMBOBOX, self.onToolSelected)
+        self.cbSlot.Bind(wx.EVT_COMBOBOX, self.onSlotSelected)
         self.tcSoll.Bind(wx.EVT_TEXT, self.onInfoChanged)
         self.btnAddXSection.Bind(wx.EVT_BUTTON, self.onAddXSectionClicked)
         self.btnDeleteXSection.Bind(wx.EVT_BUTTON, self.onDeleteXSecClicked)
@@ -41,12 +44,18 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
     def onSaveClicked(self, event):
         refNr = self.tcRefNr.GetValue()
         contactSeries = self.tcSeries.GetValue()
+        if self.rbOpenContact.GetValue():
+            crimpType = "open"
+        if self.rbClosedContact.GetValue():
+            crimpType = "closed"
+
         producer = self.tcProducer.GetValue()
         producerNr = self.tcProducerNr.GetValue()
 
         contact = {}
         contact["refNr"] = refNr
         contact["series"] = contactSeries
+        contact["crimpType"] = crimpType
         contact["producer"] = producer
         contact["producerNr"] = producerNr
         contact["crosssection"] = {}
@@ -65,14 +74,28 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         self.saveContactInfo(contact)
         self.Close()
 
+    def onCrimptypeSelected(self, event):
+        self.tcSoll.Clear()
+        self.onCrosssectionSelected(event)
+
     def onCrosssectionSelected(self, event):
         xSection = self.cbXSection.GetStringSelection()
+        soll_value = ""
+        for xs, osoll, csoll in self.xsec_soll_values:
+            if xs == xSection:
+                if self.rbOpenContact.GetValue():
+                    soll_value = str(osoll)
+                if self.rbClosedContact.GetValue():
+                    soll_value = str(csoll)
+
         if xSection:
             self.cbTool.Clear()
             self.cbSlot.Clear()
             self.tcSoll.Clear()
             self.fillToolBox()
             self.tcSoll.Enable()
+            self.tcSoll.SetValue(soll_value)
+
         else:
             self.cbTool.Disable()
             self.cbTool.Clear()
@@ -85,6 +108,9 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
     def onToolSelected(self, event):
         tool = event.GetEventObject()
         self.fillSlotBox(tool)
+        self.onInfoChanged(event)
+
+    def onSlotSelected(self, event):
         self.onInfoChanged(event)
 
     def onAddXSectionClicked(self, event):
@@ -137,7 +163,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         tool = self.cbTool.GetStringSelection()
         slot = self.cbSlot.GetStringSelection()
         soll = self.tcSoll.GetValue()
-        if xSection == "" or tool == "" or slot == "" and soll == "":
+        if xSection == "" or tool == "" or slot == "" or soll == "":
             validCrimp = False
 
         if validCrimp:
@@ -152,8 +178,13 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
     def fillXSectionBox(self):
         self.cbXSection.Clear()
+        used_xsecs = []
+        for row in range(self.lcCrimptools.GetItemCount()):
+            used_xsecs.append(self.lcCrimptools.GetItem(row, 0).GetText())
+
         for xs, osoll, csoll in self.xsec_soll_values:
-            self.cbXSection.Append(xs)
+            if xs not in used_xsecs:
+                self.cbXSection.Append(xs)
 
     def fillToolBox(self, selection=""):
         for tool in sorted(list(self.crimptools.keys())):
@@ -236,6 +267,11 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
             self.tcRefNr.SetValue(contacts[contact].get("refNr", ""))
             self.tcSeries.SetValue(contacts[contact].get("series", ""))
+            if contacts[contact].get("crimpType", "open") == "open":
+                self.rbOpenContact.SetValue(True)
+            else:
+                self.rbClosedContact.SetValue(True)
+
             self.tcProducer.SetValue(contacts[contact].get("producer", ""))
             self.tcProducerNr.SetValue(contacts[contact].get("producerNr", ""))
 
