@@ -23,29 +23,21 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.full_instructions = {}
         self.fillContacts()
 
-        self.btnNewContact.Bind(wx.EVT_BUTTON, self.onNewContactClicked)
-        self.btnEditContact.Bind(wx.EVT_BUTTON, self.onEditContactClicked)
-        self.btnDeleteContact.Bind(wx.EVT_BUTTON, self.onDeleteContactClicked)
         self.tcSearchContact.Bind(wx.EVT_TEXT, self. onSearchChanged)
 
         self.lcContacts.Bind(wx.EVT_LIST_ITEM_SELECTED,
                              self.onContactSelected)
         self.lcContacts.Bind(wx.EVT_LIST_ITEM_DESELECTED,
                              self.onContactSelected)
+        self.lcContacts.Bind(wx.EVT_LIST_ITEM_ACTIVATED,
+                             self.onEditContactClicked)
 
-        self.btnManageTools.Bind(wx.EVT_BUTTON, self.onManageToolsClicked)
         self.btnUseTools.Bind(wx.EVT_BUTTON, self.onUseToolsClicked)
 
         self.lcToolSummary.Bind(wx.EVT_LIST_ITEM_SELECTED,
                                 self.onToolSelected)
         self.lcToolSummary.Bind(wx.EVT_LIST_ITEM_DESELECTED,
                                 self.onToolSelected)
-
-        self.btnRemoveInstruction.Bind(wx.EVT_BUTTON,
-                                       self.onRemoveInstructionClicked)
-        self.btnReannotate.Bind(wx.EVT_BUTTON,
-                                self.onReannotateClicked)
-        self.btnDeleteScheme.Bind(wx.EVT_BUTTON, self.onDeleteSchemeClicked)
 
         self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_SELECTED,
                                       self.onInstructionSelected)
@@ -61,9 +53,37 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.optFile.Bind(wx.EVT_MENU, self.onSettingsClicked)
         self.optOrder.Bind(wx.EVT_MENU, self.onOpenOrdersClicked)
 
+        self.Bind(wx.EVT_MENU, self.onNewContactClicked,
+                  id=self.mbOrganizer.optCCNew.GetId())
+        self.Bind(wx.EVT_MENU, self.onEditContactClicked,
+                  id=self.mbOrganizer.optCCEdit.GetId())
+        self.Bind(wx.EVT_MENU, self.onDeleteContactClicked,
+                  id=self.mbOrganizer.optCCDelete.GetId())
+        self.mbOrganizer.optCCEdit.Enable(False)
+        self.mbOrganizer.optCCDelete.Enable(False)
+
+        self.Bind(wx.EVT_MENU, self.onManageToolsClicked,
+                  id=self.mbOrganizer.optCTManage.GetId())
+
+        self.Bind(wx.EVT_MENU, self.onDeleteSchemeClicked,
+                  id=self.mbOrganizer.optCIDelScheme.GetId())
+        self.Bind(wx.EVT_MENU, self.onRemoveInstructionClicked,
+                  id=self.mbOrganizer.optCIDelContact.GetId())
+        self.Bind(wx.EVT_MENU, self.onReannotateClicked,
+                  id=self.mbOrganizer.optCIReannotate.GetId())
+
+        self.mbOrganizer.optCIDelScheme.Enable(False)
+        self.mbOrganizer.optCIDelContact.Enable(False)
+        self.mbOrganizer.optCIReannotate.Enable(False)
+
+
         settings_path = os.path.join(self.data_directory, "settings.json")
         if not os.path.exists(settings_path):
             self.onSettingsClicked(None)
+
+    def onCrimpContactsClicked(self, event):
+        print(event.GetId())
+        event.Skip()
 
     def onSettingsClicked(self, event):
         self.SettingsDialog = SettingsDialog(self)
@@ -110,8 +130,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         contactID = self.lcContacts.GetFirstSelected()
         if contactID > -1:
             contactRef = self.lcContacts.GetItem(contactID, 0).GetText()
-            self.btnEditContact.Enable()
-            self.btnDeleteContact.Enable()
+            self.mbOrganizer.optCCEdit.Enable()
+            self.mbOrganizer.optCCDelete.Enable()
             self.lcToolSummary.DeleteAllItems()
             contact = self.crimpcontacts[contactRef]
             for xs in sorted(contact["crosssection"].keys()):
@@ -121,8 +141,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                 self.lcToolSummary.Append([xs, IDs, slot])
 
         else:
-            self.btnEditContact.Disable()
-            self.btnDeleteContact.Disable()
+            self.mbOrganizer.optCCEdit.Enable(False)
+            self.mbOrganizer.optCCDelete.Enable(False)
             self.btnUseTools.Disable()
             self.lcToolSummary.DeleteAllItems()
 
@@ -215,9 +235,9 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
     def onInstructionSelected(self, event):
         if self.lcCrimpInstructions.GetFirstSelected() > -1:
-            self.btnRemoveInstruction.Enable()
+            self.mbOrganizer.optCIDelContact.Enable()
         else:
-            self.btnRemoveInstruction.Disable()
+            self.mbOrganizer.optCIDelContact.Enable(False)
 
     def onRemoveInstructionClicked(self, event):
         instruction_id = self.lcCrimpInstructions.GetFirstSelected()
@@ -238,7 +258,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.btnCreateInstructions.Enable()
         else:
             self.btnCreateInstructions.Disable()
-            self.btnRemoveInstruction.Disable()
+            self.mbOrganizer.optCIDelContact.Enable(False)
 
     def onReannotateClicked(self, event):
         self.selected_instruction = []
@@ -274,7 +294,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
     def onSchemeNrChanged(self, event):
         schemeNr = self.tcSchemeNr.GetValue() == ""
         schemeRev = self.tcSchemeRev.GetValue() == ""
-        self.btnDeleteScheme.Disable()
+        self.mbOrganizer.optCIDelScheme.Enable(False)
         self.fillCrimpInstructions(searchpattern=self.tcSchemeNr.GetValue())
         if any([schemeNr, schemeRev]):
             self.btnCreateInstructions.Disable()
@@ -322,8 +342,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             schemeRev = obj.GetItemText(obj.GetSelection())
             self.tcSchemeNr.SetValue(schemeNr)
             self.tcSchemeRev.SetValue(schemeRev)
-            self.btnDeleteScheme.Enable()
-            self.btnReannotate.Enable()
+            self.mbOrganizer.optCIDelScheme.Enable()
+            self.mbOrganizer.optCIReannotate.Enable()
             for instruction in instructions:
                 xs, contact = instruction.split("#")
                 pos = instructions[instruction]["pos"]
@@ -334,14 +354,14 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.full_instructions = copy.deepcopy(instructions)
         else:
             self.full_instructions = {}
-            self.btnDeleteScheme.Disable()
-            self.btnReannotate.Disable()
+            self.mbOrganizer.optCIDelScheme.Enable(False)
+            self.mbOrganizer.optCIReannotate.Enable(False)
             self.tcSchemeNr.SetValue("")
             self.tcSchemeRev.SetValue("")
 
     def fillContacts(self, searchpattern=""):
-        self.btnEditContact.Disable()
-        self.btnDeleteContact.Disable()
+        self.mbOrganizer.optCCEdit.Enable(False)
+        self.mbOrganizer.optCCDelete.Enable(False)
         contacts = list(self.crimpcontacts.keys())
         contacts.sort()
         self.lcContacts.DeleteAllItems()
