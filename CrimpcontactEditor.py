@@ -142,6 +142,8 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
         xsID = self.lcCrimptools.GetFirstSelected()
         self.lcCrimptools.DeleteItem(xsID)
         self.onInfoChanged(event)
+        self.fillXSectionBox()
+        self.btnDeleteXSection.Disable()
 
     def onInfoChanged(self, event):
         infoscreen = []
