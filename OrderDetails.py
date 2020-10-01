@@ -13,6 +13,7 @@ class OrderDetails(OrderDetailsGUI):
         self.btnSave.Bind(wx.EVT_BUTTON, self.onSaveClicked)
 
         self.details_given = False
+        self.override = False
 
     def onDetailsChanged(self, event):
         detailscreen = self.readInfoScreen(internal=True)
@@ -31,6 +32,7 @@ class OrderDetails(OrderDetailsGUI):
         self.Close()
 
     def onSaveClicked(self, event):
+        self.override = True
         self.Close()
 
     def readInfoScreen(self, internal=False):
