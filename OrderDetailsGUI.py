@@ -64,7 +64,7 @@ class OrderDetailsGUI(wx.Frame):
         
         self.btnPrint = wx.Button(self.panel_1, wx.ID_ANY, "Drucken")
         self.btnPrint.Enable(False)
-        sizer_2.Add(self.btnPrint, 0, wx.ALIGN_RIGHT | wx.RIGHT | wx.TOP, 5)
+        sizer_2.Add(self.btnPrint, 0, wx.RIGHT | wx.TOP, 5)
         
         self.panel_1.SetSizer(sizer_1)
         
