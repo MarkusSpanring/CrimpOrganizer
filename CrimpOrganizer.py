@@ -199,23 +199,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                 annotated_data = self.AnnotateContacts.annotated_data[entry]
                 self.full_instructions[entry] = annotated_data
 
-                xs, contactRef = entry.split("#")
-                contact = self.crimpcontacts[contactRef]
-                self.full_instructions[entry]["series"] = contact["series"]
-                self.full_instructions[entry]["producer"] = contact["producer"]
-
-                slot = contact["crosssection"][xs]["slot"]
-                soll = contact["crosssection"][xs]["soll"]
-                self.full_instructions[entry]["slot"] = splitReadableSlot(slot)
-                self.full_instructions[entry]["soll"] = soll
-
-                tool = contact["crosssection"][xs]["tool"]
-                IDs = self.crimptools[tool]["IDs"]
-                self.full_instructions[entry]["IDs"] = IDs
-
-                producer = self.crimptools[tool]["producer"]
-                self.full_instructions[entry]["producer"] = producer
-
             for instruction in self.full_instructions:
                 xs, contact = instruction.split("#")
                 pos = self.full_instructions[instruction]["pos"]
@@ -323,11 +306,32 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             pdfcreator = CrimpInstructionPDF(outdir=outdir,
                                              outfile="{0}.pdf".format(scheme))
             pdfcreator.createPDF(order_details=details,
-                                 instructions=self.full_instructions)
+                                 instructions=self.buildInstructions())
 
             pdfcreator.showPDF()
 
         event.Skip()
+
+    def buildInstructions(self):
+        instructions = copy.deepcopy(self.full_instructions)
+        for entry in self.full_instructions:
+            xs, contactRef = entry.split("#")
+            contact = self.crimpcontacts[contactRef]
+            instructions[entry]["series"] = contact["series"]
+            instructions[entry]["producer"] = contact["producer"]
+
+            slot = contact["crosssection"][xs]["slot"]
+            soll = contact["crosssection"][xs]["soll"]
+            instructions[entry]["slot"] = splitReadableSlot(slot)
+            instructions[entry]["soll"] = soll
+
+            tool = contact["crosssection"][xs]["tool"]
+            IDs = self.crimptools[tool]["IDs"]
+            instructions[entry]["IDs"] = IDs
+
+            producer = self.crimptools[tool]["producer"]
+            instructions[entry]["producer"] = producer
+        return instructions
 
     def treeItemSelected(self, event):
         obj = event.GetEventObject()
@@ -450,7 +454,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             response = dial.ShowModal()
         if (response == wx.ID_YES or override) and self.full_instructions:
             with open(outfile, "w") as FSO:
-                json.dump(self.full_instructions, FSO)
+                json.dump(self.full_instructions, FSO, indent=4)
         self.fillCrimpInstructions()
 
 
