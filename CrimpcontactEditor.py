@@ -249,7 +249,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
             crimpcontacts = {}
             crimpcontacts[contact["refNr"]] = contact
             with open(outfile, "w") as FSO:
-                json.dump(crimpcontacts, FSO)
+                json.dump(crimpcontacts, FSO, indent=4)
 
         else:
             with open(outfile, "r") as FSO:
@@ -259,7 +259,7 @@ class CrimpcontactEditor(CrimpcontactEditorGUI):
 
                 crimpcontacts[contact["refNr"]] = contact
             with open(outfile, "w") as FSO:
-                json.dump(crimpcontacts, FSO)
+                json.dump(crimpcontacts, FSO, indent=4)
 
     def loadCrimpContact(self, contact=""):
         outfile = self.getAbsPath("crimpcontacts.json")
