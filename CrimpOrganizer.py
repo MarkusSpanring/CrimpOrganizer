@@ -208,23 +208,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                 annotated_data = self.AnnotateContacts.annotated_data[entry]
                 self.full_instructions[entry] = annotated_data
 
-                xs, contactRef = entry.split("#")
-                contact = self.crimpcontacts[contactRef]
-                self.full_instructions[entry]["series"] = contact["series"]
-                self.full_instructions[entry]["producer"] = contact["producer"]
-
-                slot = contact["crosssection"][xs]["slot"]
-                soll = contact["crosssection"][xs]["soll"]
-                self.full_instructions[entry]["slot"] = splitReadableSlot(slot)
-                self.full_instructions[entry]["soll"] = soll
-
-                tool = contact["crosssection"][xs]["tool"]
-                IDs = self.crimptools[tool]["IDs"]
-                self.full_instructions[entry]["IDs"] = IDs
-
-                producer = self.crimptools[tool]["producer"]
-                self.full_instructions[entry]["producer"] = producer
-
             for instruction in self.full_instructions:
                 xs, contact = instruction.split("#")
                 pos = self.full_instructions[instruction]["pos"]
@@ -320,7 +303,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         schemeRev = self.tcSchemeRev.GetValue()
         scheme = "-".join([schemeNr, schemeRev])
         details = self.OrderDetails.readInfoScreen()
-        self.saveCrimpInstructions(scheme)
+        self.saveCrimpInstructions(scheme, self.OrderDetails.override)
         if self.OrderDetails.details_given:
             protocolNr = details[2]
             outdir = os.path.join(self.data_directory, "data",
@@ -332,11 +315,32 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             pdfcreator = CrimpInstructionPDF(outdir=outdir,
                                              outfile="{0}.pdf".format(scheme))
             pdfcreator.createPDF(order_details=details,
-                                 instructions=self.full_instructions)
+                                 instructions=self.buildInstructions())
 
             pdfcreator.showPDF()
 
         event.Skip()
+
+    def buildInstructions(self):
+        instructions = copy.deepcopy(self.full_instructions)
+        for entry in self.full_instructions:
+            xs, contactRef = entry.split("#")
+            contact = self.crimpcontacts[contactRef]
+            instructions[entry]["series"] = contact["series"]
+            instructions[entry]["producer"] = contact["producer"]
+
+            slot = contact["crosssection"][xs]["slot"]
+            soll = contact["crosssection"][xs]["soll"]
+            instructions[entry]["slot"] = splitReadableSlot(slot)
+            instructions[entry]["soll"] = soll
+
+            tool = contact["crosssection"][xs]["tool"]
+            IDs = self.crimptools[tool]["IDs"]
+            instructions[entry]["IDs"] = IDs
+
+            producer = self.crimptools[tool]["producer"]
+            instructions[entry]["producer"] = producer
+        return instructions
 
     def treeItemSelected(self, event):
         obj = event.GetEventObject()
@@ -443,7 +447,7 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                     instructions[schemeNr][schemeRev] = json.load(FSO)
         return instructions
 
-    def saveCrimpInstructions(self, scheme):
+    def saveCrimpInstructions(self, scheme, override=False):
         outdir = os.path.join(self.data_directory, "data", "instructions")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
@@ -455,9 +459,9 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             btns = wx.YES_NO | wx.ICON_INFORMATION | wx.CANCEL
             dial = wx.MessageDialog(None, msg, 'Info', btns)
             response = dial.ShowModal()
-        if response == wx.ID_YES and self.full_instructions:
+        if (response == wx.ID_YES or override) and self.full_instructions:
             with open(outfile, "w") as FSO:
-                json.dump(self.full_instructions, FSO)
+                json.dump(self.full_instructions, FSO, indent=4)
         self.fillCrimpInstructions()
 
 
