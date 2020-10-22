@@ -34,12 +34,14 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.lcContacts.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK,
                              self.onContactRClicked)
 
-        self.btnUseTools.Bind(wx.EVT_BUTTON, self.onUseToolsClicked)
-
         self.lcToolSummary.Bind(wx.EVT_LIST_ITEM_SELECTED,
                                 self.onToolSelected)
         self.lcToolSummary.Bind(wx.EVT_LIST_ITEM_DESELECTED,
                                 self.onToolSelected)
+        self.lcToolSummary.Bind(wx.EVT_LIST_ITEM_ACTIVATED,
+                                self.onUseToolsClicked)
+        self.lcToolSummary.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK,
+                                self.onToolsRClicked)
 
         self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_SELECTED,
                                       self.onInstructionSelected)
@@ -166,13 +168,11 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                 self.lcToolSummary.Append([xs, IDs, slot])
 
         else:
-            self.btnUseTools.Disable()
             self.lcToolSummary.DeleteAllItems()
 
     def onToolSelected(self, event):
         self.selected_instruction = []
         if self.lcToolSummary.GetFirstSelected() > -1:
-            self.btnUseTools.Enable()
 
             contactID = self.lcContacts.GetFirstSelected()
             contactRef = self.lcContacts.GetItem(contactID, 0).GetText()
@@ -186,10 +186,24 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
                 sel = self.lcToolSummary.GetNextSelected(sel)
 
-            if not self.selected_instruction:
-                self.btnUseTools.Disable()
-        else:
-            self.btnUseTools.Disable()
+    def onToolsRClicked(self, event):
+        selTools = self.lcToolSummary.GetFirstSelected()
+        if selTools == -1:
+            return
+        menus = [(wx.NewIdRef(count=1), u"Hinzufügen",
+                  self.onUseToolsClicked)]
+
+        popup_menu = wx.Menu()
+        for menu in menus:
+            if menu is None:
+                popup_menu.AppendSeparator()
+                continue
+            popup_menu.Append(menu[0], menu[1])
+            self.Bind(wx.EVT_MENU, menu[2], id=menu[0])
+
+        self.PopupMenu(popup_menu, self.ScreenToClient(wx.GetMousePosition()))
+        popup_menu.Destroy()
+        return
 
     def onUseToolsClicked(self, event):
         identifiers = self.selected_instruction
