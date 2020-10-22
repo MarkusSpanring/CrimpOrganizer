@@ -31,6 +31,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                              self.onContactSelected)
         self.lcContacts.Bind(wx.EVT_LIST_ITEM_ACTIVATED,
                              self.onEditContactClicked)
+        self.lcContacts.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK,
+                             self.onContactRClicked)
 
         self.btnUseTools.Bind(wx.EVT_BUTTON, self.onUseToolsClicked)
 
@@ -53,17 +55,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.optFile.Bind(wx.EVT_MENU, self.onSettingsClicked)
         self.optOrder.Bind(wx.EVT_MENU, self.onOpenOrdersClicked)
 
-        self.Bind(wx.EVT_MENU, self.onNewContactClicked,
-                  id=self.mbOrganizer.optCCNew.GetId())
-        self.Bind(wx.EVT_MENU, self.onEditContactClicked,
-                  id=self.mbOrganizer.optCCEdit.GetId())
-        self.Bind(wx.EVT_MENU, self.onDeleteContactClicked,
-                  id=self.mbOrganizer.optCCDelete.GetId())
-        self.mbOrganizer.optCCEdit.Enable(False)
-        self.mbOrganizer.optCCDelete.Enable(False)
-
-        self.Bind(wx.EVT_MENU, self.onManageToolsClicked,
-                  id=self.mbOrganizer.optCTManage.GetId())
+        self.btnNewContact.Bind(wx.EVT_BUTTON, self.onNewContactClicked)
+        self.btnManageTools.Bind(wx.EVT_BUTTON, self.onManageToolsClicked)
 
         self.Bind(wx.EVT_MENU, self.onDeleteSchemeClicked,
                   id=self.mbOrganizer.optCIDelScheme.GetId())
@@ -75,7 +68,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.mbOrganizer.optCIDelScheme.Enable(False)
         self.mbOrganizer.optCIDelContact.Enable(False)
         self.mbOrganizer.optCIReannotate.Enable(False)
-
 
         settings_path = os.path.join(self.data_directory, "settings.json")
         if not os.path.exists(settings_path):
@@ -94,6 +86,27 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         print("order")
         event.Skip()
 
+    def onContactRClicked(self, event):
+        contactID = self.lcContacts.GetFirstSelected()
+        if contactID == -1:
+            return
+        menus = [(wx.NewIdRef(count=1), "Bearbeiten",
+                  self.onEditContactClicked),
+                 (wx.NewIdRef(count=1), u"Löschen",
+                  self.onDeleteContactClicked)]
+
+        popup_menu = wx.Menu()
+        for menu in menus:
+            if menu is None:
+                popup_menu.AppendSeparator()
+                continue
+            popup_menu.Append(menu[0], menu[1])
+            self.Bind(wx.EVT_MENU, menu[2], id=menu[0])
+
+        self.PopupMenu(popup_menu, self.ScreenToClient(wx.GetMousePosition()))
+        popup_menu.Destroy()
+        return
+
     def onNewContactClicked(self, event):
         self.CrimpcontactEditor = CrimpcontactEditor(self, preload="")
         self.CrimpcontactEditor.Bind(wx.EVT_CLOSE, self.onContaktEditorClose)
@@ -105,6 +118,20 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.CrimpcontactEditor = CrimpcontactEditor(self, preload=contactRef)
         self.CrimpcontactEditor.Bind(wx.EVT_CLOSE, self.onContaktEditorClose)
         self.CrimpcontactEditor.Show()
+
+    def onDeleteContactClicked(self, event):
+        contactID = self.lcContacts.GetFirstSelected()
+        contactRef = self.lcContacts.GetItem(contactID, 0).GetText()
+
+        msg = 'Really?! Soll Kontakt "{0}"'.format(contactRef)
+        msg += 'unwiderruflich gelöscht werden?'
+        response = wx.MessageBox(msg, 'Info', wx.YES_NO | wx.ICON_WARNING)
+
+        if contactID > -1 and response == wx.YES:
+            self.crimpcontacts = self.loadCrimpcontacts()
+            self.crimpcontacts.pop(contactRef)
+            self.saveCrimpcontacts()
+            self.fillContacts()
 
     def onContaktEditorClose(self, event):
         self.crimpcontacts = self.loadCrimpcontacts()
@@ -130,8 +157,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         contactID = self.lcContacts.GetFirstSelected()
         if contactID > -1:
             contactRef = self.lcContacts.GetItem(contactID, 0).GetText()
-            self.mbOrganizer.optCCEdit.Enable()
-            self.mbOrganizer.optCCDelete.Enable()
             self.lcToolSummary.DeleteAllItems()
             contact = self.crimpcontacts[contactRef]
             for xs in sorted(contact["crosssection"].keys()):
@@ -141,24 +166,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
                 self.lcToolSummary.Append([xs, IDs, slot])
 
         else:
-            self.mbOrganizer.optCCEdit.Enable(False)
-            self.mbOrganizer.optCCDelete.Enable(False)
             self.btnUseTools.Disable()
             self.lcToolSummary.DeleteAllItems()
-
-    def onDeleteContactClicked(self, event):
-        contactID = self.lcContacts.GetFirstSelected()
-        contactRef = self.lcContacts.GetItem(contactID, 0).GetText()
-
-        msg = 'Really?! Soll Kontakt "{0}"'.format(contactRef)
-        msg += 'unwiderruflich gelöscht werden?'
-        response = wx.MessageBox(msg, 'Info', wx.YES_NO | wx.ICON_WARNING)
-
-        if contactID > -1 and response == wx.YES:
-            self.crimpcontacts = self.loadCrimpcontacts()
-            self.crimpcontacts.pop(contactRef)
-            self.saveCrimpcontacts()
-            self.fillContacts()
 
     def onToolSelected(self, event):
         self.selected_instruction = []
@@ -360,8 +369,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.tcSchemeRev.SetValue("")
 
     def fillContacts(self, searchpattern=""):
-        self.mbOrganizer.optCCEdit.Enable(False)
-        self.mbOrganizer.optCCDelete.Enable(False)
         contacts = list(self.crimpcontacts.keys())
         contacts.sort()
         self.lcContacts.DeleteAllItems()
