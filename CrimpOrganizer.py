@@ -43,10 +43,8 @@ class CrimpOrganizer(CrimpOrganizerGUI):
         self.lcToolSummary.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK,
                                 self.onToolsRClicked)
 
-        self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_SELECTED,
-                                      self.onInstructionSelected)
-        self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_DESELECTED,
-                                      self.onInstructionSelected)
+        self.lcCrimpInstructions.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK,
+                                      self.onInstructionRClicked)
 
         self.btnCreateInstructions.Bind(wx.EVT_BUTTON, self.onCreateClicked)
         self.tcSchemeNr.Bind(wx.EVT_TEXT, self.onSchemeNrChanged)
@@ -62,13 +60,11 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
         self.Bind(wx.EVT_MENU, self.onDeleteSchemeClicked,
                   id=self.mbOrganizer.optCIDelScheme.GetId())
-        self.Bind(wx.EVT_MENU, self.onRemoveInstructionClicked,
-                  id=self.mbOrganizer.optCIDelContact.GetId())
+
         self.Bind(wx.EVT_MENU, self.onReannotateClicked,
                   id=self.mbOrganizer.optCIReannotate.GetId())
 
         self.mbOrganizer.optCIDelScheme.Enable(False)
-        self.mbOrganizer.optCIDelContact.Enable(False)
         self.mbOrganizer.optCIReannotate.Enable(False)
 
         settings_path = os.path.join(self.data_directory, "settings.json")
@@ -239,11 +235,24 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
         event.Skip()
 
-    def onInstructionSelected(self, event):
-        if self.lcCrimpInstructions.GetFirstSelected() > -1:
-            self.mbOrganizer.optCIDelContact.Enable()
-        else:
-            self.mbOrganizer.optCIDelContact.Enable(False)
+    def onInstructionRClicked(self, event):
+        selContact = self.lcCrimpInstructions.GetFirstSelected()
+        if selContact == -1:
+            return
+        menus = [(wx.NewIdRef(count=1), u"Kontakt entfernen",
+                  self.onRemoveInstructionClicked)]
+
+        popup_menu = wx.Menu()
+        for menu in menus:
+            if menu is None:
+                popup_menu.AppendSeparator()
+                continue
+            popup_menu.Append(menu[0], menu[1])
+            self.Bind(wx.EVT_MENU, menu[2], id=menu[0])
+
+        self.PopupMenu(popup_menu, self.ScreenToClient(wx.GetMousePosition()))
+        popup_menu.Destroy()
+        return
 
     def onRemoveInstructionClicked(self, event):
         instruction_id = self.lcCrimpInstructions.GetFirstSelected()
@@ -264,7 +273,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.btnCreateInstructions.Enable()
         else:
             self.btnCreateInstructions.Disable()
-            self.mbOrganizer.optCIDelContact.Enable(False)
 
     def onReannotateClicked(self, event):
         self.selected_instruction = []
