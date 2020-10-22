@@ -52,20 +52,16 @@ class CrimpOrganizer(CrimpOrganizerGUI):
 
         self.treeInstructions.Bind(wx.EVT_TREE_SEL_CHANGED,
                                    self.treeItemSelected)
+        self.treeInstructions.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK,
+                                   self.treeItemRClicked)
+
         self.optFile.Bind(wx.EVT_MENU, self.onSettingsClicked)
         self.optOrder.Bind(wx.EVT_MENU, self.onOpenOrdersClicked)
 
         self.btnNewContact.Bind(wx.EVT_BUTTON, self.onNewContactClicked)
         self.btnManageTools.Bind(wx.EVT_BUTTON, self.onManageToolsClicked)
 
-        self.Bind(wx.EVT_MENU, self.onDeleteSchemeClicked,
-                  id=self.mbOrganizer.optCIDelScheme.GetId())
 
-        self.Bind(wx.EVT_MENU, self.onReannotateClicked,
-                  id=self.mbOrganizer.optCIReannotate.GetId())
-
-        self.mbOrganizer.optCIDelScheme.Enable(False)
-        self.mbOrganizer.optCIReannotate.Enable(False)
 
         settings_path = os.path.join(self.data_directory, "settings.json")
         if not os.path.exists(settings_path):
@@ -308,7 +304,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
     def onSchemeNrChanged(self, event):
         schemeNr = self.tcSchemeNr.GetValue() == ""
         schemeRev = self.tcSchemeRev.GetValue() == ""
-        self.mbOrganizer.optCIDelScheme.Enable(False)
         self.fillCrimpInstructions(searchpattern=self.tcSchemeNr.GetValue())
         if any([schemeNr, schemeRev]):
             self.btnCreateInstructions.Disable()
@@ -364,6 +359,29 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             instructions[entry]["producer"] = producer
         return instructions
 
+    def treeItemRClicked(self, event):
+        schemeNr = self.tcSchemeNr.GetValue()
+        schemeRev = self.tcSchemeRev.GetValue()
+        scheme = "-".join([schemeNr, schemeRev]) + ".json"
+        folder = os.path.join(self.data_directory, "data", "instructions")
+        filename = os.path.join(folder, scheme)
+        if not os.path.exists(filename):
+            return
+
+        menus = [(wx.NewIdRef(count=1), u"Zeichnung löschen",
+                  self.onDeleteSchemeClicked),
+                 (wx.NewIdRef(count=1), u"Pos./Gehäuse neu zuweisen",
+                  self.onReannotateClicked)]
+
+        popup_menu = wx.Menu()
+        for menu in menus:
+            popup_menu.Append(menu[0], menu[1])
+            self.Bind(wx.EVT_MENU, menu[2], id=menu[0])
+
+        self.PopupMenu(popup_menu, self.ScreenToClient(wx.GetMousePosition()))
+        popup_menu.Destroy()
+        return
+
     def treeItemSelected(self, event):
         obj = event.GetEventObject()
         instructions = obj.GetItemData(obj.GetSelection())
@@ -377,8 +395,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             schemeRev = obj.GetItemText(obj.GetSelection())
             self.tcSchemeNr.SetValue(schemeNr)
             self.tcSchemeRev.SetValue(schemeRev)
-            self.mbOrganizer.optCIDelScheme.Enable()
-            self.mbOrganizer.optCIReannotate.Enable()
             for instruction in instructions:
                 xs, contact = instruction.split("#")
                 pos = instructions[instruction]["pos"]
@@ -389,8 +405,6 @@ class CrimpOrganizer(CrimpOrganizerGUI):
             self.full_instructions = copy.deepcopy(instructions)
         else:
             self.full_instructions = {}
-            self.mbOrganizer.optCIDelScheme.Enable(False)
-            self.mbOrganizer.optCIReannotate.Enable(False)
             self.tcSchemeNr.SetValue("")
             self.tcSchemeRev.SetValue("")
 
