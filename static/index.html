@@ -609,6 +609,27 @@
         </div>
     </template>
 
+    <!-- 9. Update Confirmation Dialog Template -->
+    <template id="tmpl-update-confirm">
+        <div class="modal-overlay" id="modal-update-confirm">
+            <div class="modal-box" style="max-width: 420px; border-top: 4px solid var(--accent);">
+                <div class="modal-header">
+                    <h3>🔄 Anwendung aktualisieren?</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin: 0; line-height: 1.5; color: var(--text-primary);">
+                        Möchten Sie die Anwendung jetzt aktualisieren? Dabei wird der neueste Code aus dem Git-Repository heruntergeladen und der Server neu gestartet.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-update">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm-update-yes">Aktualisieren</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <!-- JavaScript entry point -->
     <script type="module" src="js/main.js"></script>
 </body>

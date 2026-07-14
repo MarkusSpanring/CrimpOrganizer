@@ -95,78 +95,92 @@ async function bootstrap() {
         // Setup update sidebar action trigger
         const btnUpdateNav = document.getElementById('btn-update-nav');
         if (btnUpdateNav) {
-            btnUpdateNav.addEventListener('click', async (e) => {
+            btnUpdateNav.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (!confirm("Möchten Sie die Anwendung jetzt aktualisieren? Dabei wird der neueste Code aus dem Git-Repository heruntergeladen und die Anwendung neu gestartet.")) {
-                    return;
+                
+                const confirmModal = document.getElementById('modal-update-confirm');
+                if (!confirmModal) return;
+                
+                const btnCancel = document.getElementById('btn-cancel-update');
+                const btnConfirm = document.getElementById('btn-confirm-update-yes');
+                
+                if (btnCancel) {
+                    btnCancel.onclick = () => closeModal(confirmModal);
                 }
                 
-                const modal = document.getElementById('modal-update-status');
-                if (!modal) return;
-                
-                // Reset elements to initial loading state
-                const elSpinner = document.getElementById('update-loader-spinner');
-                const elStatusText = document.getElementById('update-status-text');
-                const elOutputContainer = document.getElementById('update-output-container');
-                const elConsoleLog = document.getElementById('update-console-log');
-                const elCountdownText = document.getElementById('update-countdown-text');
-                const elSecondsLeft = document.getElementById('update-seconds-left');
-                const elFooter = document.getElementById('update-status-footer');
-                const btnClose = document.getElementById('btn-close-update-modal');
-                
-                if (elSpinner) elSpinner.style.display = 'block';
-                if (elStatusText) elStatusText.textContent = 'Repository-Änderungen werden abgerufen...';
-                if (elOutputContainer) elOutputContainer.style.display = 'none';
-                if (elConsoleLog) elConsoleLog.textContent = '';
-                if (elCountdownText) elCountdownText.style.display = 'none';
-                if (elFooter) elFooter.style.display = 'none';
-                
-                // Set up close button listener
-                if (btnClose) {
-                    btnClose.onclick = () => closeModal(modal);
-                }
-                
-                openModal(modal);
-                
-                try {
-                    const res = await apiTriggerUpdate();
-                    
-                    if (elSpinner) elSpinner.style.display = 'none';
-                    if (elOutputContainer) elOutputContainer.style.display = 'flex';
-                    
-                    if (res && res.success) {
-                        if (elConsoleLog) elConsoleLog.textContent = res.message || "Git Pull erfolgreich.";
-                        if (elCountdownText) elCountdownText.style.display = 'block';
+                if (btnConfirm) {
+                    btnConfirm.onclick = async () => {
+                        closeModal(confirmModal);
                         
-                        // Start 3 seconds countdown
-                        let seconds = 3;
-                        if (elSecondsLeft) elSecondsLeft.textContent = seconds;
-                        const interval = setInterval(() => {
-                            seconds--;
-                            if (elSecondsLeft) elSecondsLeft.textContent = seconds;
-                            if (seconds <= 0) {
-                                clearInterval(interval);
-                                window.location.reload();
+                        const statusModal = document.getElementById('modal-update-status');
+                        if (!statusModal) return;
+                        
+                        // Reset elements to initial loading state
+                        const elSpinner = document.getElementById('update-loader-spinner');
+                        const elStatusText = document.getElementById('update-status-text');
+                        const elOutputContainer = document.getElementById('update-output-container');
+                        const elConsoleLog = document.getElementById('update-console-log');
+                        const elCountdownText = document.getElementById('update-countdown-text');
+                        const elSecondsLeft = document.getElementById('update-seconds-left');
+                        const elFooter = document.getElementById('update-status-footer');
+                        const btnClose = document.getElementById('btn-close-update-modal');
+                        
+                        if (elSpinner) elSpinner.style.display = 'block';
+                        if (elStatusText) elStatusText.textContent = 'Repository-Änderungen werden abgerufen...';
+                        if (elOutputContainer) elOutputContainer.style.display = 'none';
+                        if (elConsoleLog) elConsoleLog.textContent = '';
+                        if (elCountdownText) elCountdownText.style.display = 'none';
+                        if (elFooter) elFooter.style.display = 'none';
+                        
+                        if (btnClose) {
+                            btnClose.onclick = () => closeModal(statusModal);
+                        }
+                        
+                        openModal(statusModal);
+                        
+                        try {
+                            const res = await apiTriggerUpdate();
+                            
+                            if (elSpinner) elSpinner.style.display = 'none';
+                            if (elOutputContainer) elOutputContainer.style.display = 'flex';
+                            
+                            if (res && res.success) {
+                                if (elConsoleLog) elConsoleLog.textContent = res.message || "Git Pull erfolgreich.";
+                                if (elCountdownText) elCountdownText.style.display = 'block';
+                                
+                                // Start 3 seconds countdown
+                                let seconds = 3;
+                                if (elSecondsLeft) elSecondsLeft.textContent = seconds;
+                                const interval = setInterval(() => {
+                                    seconds--;
+                                    if (elSecondsLeft) elSecondsLeft.textContent = seconds;
+                                    if (seconds <= 0) {
+                                        clearInterval(interval);
+                                        window.location.reload();
+                                    }
+                                }, 1000);
+                                
+                            } else {
+                                if (elConsoleLog) elConsoleLog.textContent = "Fehler: " + (res.error || "Unbekannter Fehler");
+                                if (elFooter) elFooter.style.display = 'flex';
                             }
-                        }, 1000);
-                        
-                    } else {
-                        if (elConsoleLog) elConsoleLog.textContent = "Fehler: " + (res.error || "Unbekannter Fehler");
-                        if (elFooter) elFooter.style.display = 'flex';
-                    }
-                } catch (err) {
-                    if (elSpinner) elSpinner.style.display = 'none';
-                    if (elOutputContainer) elOutputContainer.style.display = 'flex';
-                    if (elConsoleLog) elConsoleLog.textContent = "Verbindung verloren oder Fehler beim Neustart.\nDie Anwendung startet wahrscheinlich gerade neu. Lade in Kürze neu...";
-                    if (elCountdownText) {
-                        elCountdownText.style.display = 'block';
-                        elCountdownText.innerHTML = 'Seite wird in Kürze neu geladen...';
-                    }
-                    
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 5000);
+                        } catch (err) {
+                            if (elSpinner) elSpinner.style.display = 'none';
+                            if (elOutputContainer) elOutputContainer.style.display = 'flex';
+                            if (elConsoleLog) elConsoleLog.textContent = "Verbindung verloren oder Fehler beim Neustart.\nDie Anwendung startet wahrscheinlich gerade neu. Lade in Kürze neu...";
+                            if (elCountdownText) {
+                                elCountdownText.style.display = 'block';
+                                elCountdownText.innerHTML = 'Seite wird in Kürze neu geladen...';
+                            }
+                            
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 5000);
+                        }
+                    };
                 }
+                
+                openModal(confirmModal);
             });
         }
 
