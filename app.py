@@ -33,7 +33,7 @@ def load_json_file(subfolder, filename, default_val=None):
         try:
             with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception as e:
+        except (OSError, json.JSONDecodeError) as e:
             print(f"Error loading {path}: {e}", file=sys.stderr)
     return default_val
 
@@ -44,7 +44,7 @@ def save_json_file(subfolder, filename, data):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
         return True
-    except Exception as e:
+    except (OSError, TypeError) as e:
         print(f"Error saving {path}: {e}", file=sys.stderr)
         return False
 
@@ -55,7 +55,7 @@ def load_settings():
         try:
             with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception as e:
+        except (OSError, json.JSONDecodeError) as e:
             print(f"Error loading settings.json: {e}", file=sys.stderr)
     
     # Default settings if file does not exist or fails
@@ -81,7 +81,7 @@ def load_settings():
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(default_settings, f, indent=4, ensure_ascii=False)
-    except Exception as e:
+    except (OSError, TypeError) as e:
         print(f"Error creating default settings.json: {e}", file=sys.stderr)
     return default_settings
 
@@ -92,7 +92,7 @@ def save_settings(data):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
         return True
-    except Exception as e:
+    except (OSError, TypeError) as e:
         print(f"Error saving settings.json: {e}", file=sys.stderr)
         return False
 
@@ -123,7 +123,7 @@ def load_crimp_instructions():
             try:
                 with open(os.path.join(outdir, d), "r", encoding="utf-8") as f:
                     instructions[schemeNr][schemeRev] = json.load(f)
-            except Exception as e:
+            except (OSError, json.JSONDecodeError) as e:
                 print(f"Error loading instruction file {d}: {e}", file=sys.stderr)
     return instructions
 
@@ -136,7 +136,7 @@ def save_crimp_instructions(scheme, full_instructions):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(full_instructions, f, indent=4, ensure_ascii=False)
         return True
-    except Exception as e:
+    except (OSError, TypeError) as e:
         print(f"Error saving instruction {scheme}: {e}", file=sys.stderr)
         return False
 
@@ -148,7 +148,7 @@ def delete_instruction_file(scheme):
         try:
             os.remove(filename)
             return True
-        except Exception as e:
+        except OSError as e:
             print(f"Error removing instruction file {filename}: {e}", file=sys.stderr)
     return False
 
@@ -388,7 +388,7 @@ def export_pdf():
         
         return send_file(pdf_path, mimetype='application/pdf')
         
-    except Exception as e:
+    except (OSError, ValueError, KeyError, AttributeError, RuntimeError) as e:
         print(f"PDF creation failed: {e}", file=sys.stderr)
         return jsonify({"error": f"PDF creation failed: {str(e)}"}), 500
 
@@ -467,7 +467,7 @@ def update_application():
             "message": f"Update erfolgreich. Anwendung wird neu gestartet...\n\nDetails:\n{result.stdout}"
         })
         
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         return jsonify({
             "success": False,
             "error": f"Update-Fehler: {str(e)}"
@@ -487,7 +487,7 @@ def main():
         url_host = "127.0.0.1" if args.host == "0.0.0.0" else args.host
         try:
             webbrowser.open(f"http://{url_host}:{args.port}")
-        except Exception as e:
+        except webbrowser.Error as e:
             print(f"Browser launch skipped: {e}", file=sys.stderr)
             
     app.run(host=args.host, port=args.port, debug=True)
