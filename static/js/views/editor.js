@@ -456,7 +456,7 @@ export function selectTool(ref) {
         state.selectedContactRef = ""; // Clear contact selection
         
         const t = state.tools[ref];
-        const ids = t.IDs && t.IDs.length > 0 ? ` (${t.IDs.join(", ")})` : "";
+        const ids = t.IDs && t.IDs.length > 0 ? ` (z.B. ${t.IDs.join(", ")})` : "";
         elFilterName.textContent = `${t.producer} | ${t.series}${ids}`;
         elFilterBanner.style.display = "flex";
     }

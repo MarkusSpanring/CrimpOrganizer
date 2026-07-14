@@ -99,20 +99,22 @@ function updateAddXsButtonHighlight() {
 function checkContactChanges() {
     const btnSave = document.getElementById('btn-save-contact');
     if (!btnSave) return;
-    
+
     const ref = elRef.value.trim();
     const producer = elProducer.value.trim();
     const series = elSeries.value.trim();
     const prodNr = elProdNr.value.trim();
     const typeClosed = document.getElementById('type-closed')?.checked || false;
     const crimpType = typeClosed ? "closed" : "open";
-    
+
     if (!currentContactRef) {
+        // New contact: require text inputs AND at least one cross-section (matching legacy)
         const hasInputs = ref !== "" && producer !== "" && series !== "";
-        btnSave.disabled = !hasInputs;
+        const hasCrosssections = Object.keys(localCrosssections).length > 0;
+        btnSave.disabled = !(hasInputs && hasCrosssections);
         return;
     }
-    
+
     const c = state.contacts[currentContactRef] || {};
     const changed =
         ref !== currentContactRef ||
@@ -121,7 +123,7 @@ function checkContactChanges() {
         prodNr !== (c.producerNr || "") ||
         crimpType !== (c.crimpType || "open") ||
         JSON.stringify(localCrosssections) !== JSON.stringify(c.crosssection || {});
-        
+
     btnSave.disabled = !changed;
 }
 
@@ -175,7 +177,8 @@ function populateContactEditorToolsDropdown() {
     
     toolRefs.forEach(ref => {
         const t = state.tools[ref];
-        const ids = t.IDs && t.IDs.length > 0 ? ` (${t.IDs.join(", ")})` : "";
+        // Match legacy getReadableToolName() format with z.B. prefix
+        const ids = t.IDs && t.IDs.length > 0 ? ` (z.B. ${t.IDs.join(", ")})` : "";
         const option = document.createElement('option');
         option.value = ref;
         option.textContent = `${t.producer} | ${t.series}${ids}`;
@@ -335,7 +338,7 @@ async function onContactEditorSaveClicked() {
     const series = elSeries.value.trim();
     const crimpType = document.getElementById('type-closed').checked ? "closed" : "open";
     const producerNr = elProdNr.value.trim();
-    
+
     if (!ref) {
         showToast("Bitte Artikelnummer (Referenz) angeben.", "warning");
         return;
@@ -348,7 +351,11 @@ async function onContactEditorSaveClicked() {
         showToast("Bitte Serie/Bezeichnung angeben.", "warning");
         return;
     }
-    
+    if (Object.keys(localCrosssections).length === 0) {
+        showToast("Bitte mindestens eine Querschnitt-Zuweisung hinzufügen.", "warning");
+        return;
+    }
+
     const contactPayload = {
         refNr: ref,
         producer: producer,
@@ -357,13 +364,13 @@ async function onContactEditorSaveClicked() {
         producerNr: producerNr,
         crosssection: localCrosssections
     };
-    
+
     try {
         const res = await apiSaveContact(contactPayload, currentContactRef);
         if (res.success) {
             showToast("Kontakt erfolgreich gespeichert", "success");
             closeModal(modal);
-            
+
             // Reload contacts list
             const updated = await apiFetchContacts();
             state.contacts = updated;

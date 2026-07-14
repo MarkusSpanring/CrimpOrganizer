@@ -154,18 +154,43 @@ def delete_instruction_file(scheme):
 
 
 def split_readable_slot(slot):
+    """Convert any slot representation to [awg, met] for PDF rendering."""
     if not slot:
         return ["", ""]
-    slot_list = slot.split(" | ")
+    # Already a normalized [awg, met] list/tuple
+    if isinstance(slot, (list, tuple)) and len(slot) >= 2:
+        return [str(slot[0]), str(slot[1])]
+    slot_str = str(slot)
+    slot_list = slot_str.split(" | ")
     if len(slot_list) == 1:
         if "AWG" in slot_list[0]:
-            return [slot_list[0].replace("AWG ", ""), ""]
+            return [slot_list[0].replace("AWG ", "").strip(), ""]
         if "mm²" in slot_list[0]:
-            return ["", slot_list[0].replace(" mm²", "")]
+            return ["", slot_list[0].replace(" mm²", "").strip()]
+        return [slot_str, ""]
     if len(slot_list) >= 2:
-        slot_list[0] = slot_list[0].replace("AWG ", "")
-        slot_list[1] = slot_list[1].replace(" mm²", "")
+        slot_list[0] = slot_list[0].replace("AWG ", "").strip()
+        slot_list[1] = slot_list[1].replace(" mm²", "").strip()
         return slot_list[:2]
+    return ["", ""]
+
+
+def normalize_slot(slot):
+    """Normalize any slot value to the canonical [awg, met] string-pair format."""
+    if isinstance(slot, (list, tuple)) and len(slot) >= 2:
+        return [str(slot[0]), str(slot[1])]
+    if isinstance(slot, str):
+        slot = slot.strip()
+        if " | " in slot:
+            parts = slot.split(" | ", 1)
+            awg = parts[0].replace("AWG ", "").strip()
+            met = parts[1].replace(" mm²", "").strip()
+            return [awg, met]
+        if slot.startswith("AWG "):
+            return [slot.replace("AWG ", "").strip(), ""]
+        if slot.endswith(" mm²"):
+            return ["", slot.replace(" mm²", "").strip()]
+        return [slot, ""]
     return ["", ""]
 
 
@@ -242,12 +267,20 @@ def save_contact():
     contact = request.json
     if not contact or "refNr" not in contact:
         return jsonify({"error": "Invalid contact data"}), 400
-    
+
+    # Normalize soll values to integers for consistent storage
+    for xs_data in contact.get("crosssection", {}).values():
+        raw_soll = xs_data.get("soll", 0)
+        try:
+            xs_data["soll"] = int(raw_soll)
+        except (ValueError, TypeError):
+            xs_data["soll"] = 0
+
     contacts_data = load_json_file("crimpcontacts", "crimpcontacts.json", default_val={})
     old_ref = request.args.get("oldRef", "")
     if old_ref and old_ref in contacts_data and old_ref != contact["refNr"]:
         contacts_data.pop(old_ref)
-        
+
     contacts_data[contact["refNr"]] = contact
     save_json_file("crimpcontacts", "crimpcontacts.json", contacts_data)
     return jsonify({"success": True})
@@ -276,13 +309,16 @@ def save_tool():
     tool = request.json
     if not tool or "producer" not in tool or "series" not in tool or "producerNr" not in tool:
         return jsonify({"error": "Invalid tool data"}), 400
-    
+
+    # Normalize all slots to canonical [awg, met] string-pair format
+    tool["slots"] = [normalize_slot(s) for s in tool.get("slots", [])]
+
     ref = f"{tool['producer']}#{tool['series']}#{tool['producerNr']}"
     tools_data = load_json_file("crimptools", "crimptools.json", default_val={})
     old_ref = request.args.get("oldRef", "")
     if old_ref and old_ref in tools_data and old_ref != ref:
         tools_data.pop(old_ref)
-        
+
     tools_data[ref] = tool
     save_json_file("crimptools", "crimptools.json", tools_data)
     return jsonify({"success": True, "ref": ref})
