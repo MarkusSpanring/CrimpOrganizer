@@ -1,0 +1,94 @@
+<!-- VIEW 2: EDITOR -->
+<section class="view-panel hidden" id="view-editor">
+    <div class="editor-header-bar">
+        <h2 id="editor-view-title">Anleitung erstellen / bearbeiten</h2>
+    </div>
+    
+    <div class="workspace">
+        <!-- Column 1: Crimp Contacts -->
+        <section class="panel-col" id="col-contacts">
+            <div class="panel-header">
+                <h2>Crimpkontakte</h2>
+                <button class="btn btn-primary btn-sm" id="btn-new-contact">Neu</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-contact" placeholder="Hersteller, Serie, Ref suchen...">
+            </div>
+            <div class="list-container">
+                <table class="list-ctrl" id="editor-contacts-table">
+                    <thead id="contacts-thead">
+                        <tr>
+                            <th style="width: 35%;">Crimpung</th>
+                            <th style="width: 35%;" id="th-contact-desc">Beschreibung / Querschnitte</th>
+                            <th style="width: 30%; text-align: right;">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contacts-table-body">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Column 2: Crimp Tools & Contact Details -->
+        <section class="panel-col" id="col-tools">
+            <div class="panel-header">
+                <h2>Crimpwerkzeuge</h2>
+                <button class="btn btn-primary btn-sm" id="btn-new-tool">Neu</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-tool" placeholder="Zange, ID suchen...">
+            </div>
+            <div class="filter-banner" id="filter-banner" style="display: none;">
+                <span id="filter-name">Filter</span>
+                <button class="btn-clear" id="btn-clear-filter" style="display: inline-block;">&times;</button>
+            </div>
+            
+            <div class="list-container">
+                <table class="list-ctrl" id="editor-tools-table">
+                    <thead id="tools-thead">
+                        <tr>
+                            <th style="width: 35%;">Hersteller</th>
+                            <th style="width: 35%;" id="th-tool-series">Serie (IDs)</th>
+                            <th style="width: 30%; text-align: right;">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tools-table-body">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Column 3: Crimp Instructions Creator -->
+        <section class="panel-col" id="col-instructions">
+            <div class="panel-header scheme-header">
+                <h2>Crimpanweisung</h2>
+                <div class="preview-actions">
+                    <button class="btn btn-primary btn-sm" id="btn-save-draft" disabled>Speichern</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-print-editor" disabled>🖨️ Drucken</button>
+                    <button class="btn btn-danger btn-sm" id="btn-clear-editor">Leeren</button>
+                </div>
+                <input type="hidden" id="scheme-nr">
+                <input type="hidden" id="scheme-rev">
+            </div>
+            
+            <div class="list-container">
+                <table class="list-ctrl">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Pos.</th>
+                            <th style="width: 35%;">Artikel</th>
+                            <th style="width: 20%;">Ø</th>
+                            <th style="width: 20%;">Gehäuse</th>
+                            <th style="width: 10%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="instructions-table-body">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>

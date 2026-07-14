@@ -1,0 +1,25 @@
+<!-- VIEW 3: PRINTED ORDERS -->
+<section class="view-panel hidden" id="view-orders">
+    <div class="orders-header-bar">
+        <h2>Gedruckte Aufträge</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="search-orders" placeholder="Suchen..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); width: 250px;">
+        </div>
+    </div>
+
+    <div class="list-container" style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+        <table class="list-ctrl" id="table-orders">
+            <thead>
+                <tr>
+                    <th class="sortable" data-sort="mtime" style="width: 25%;">Druckdatum <span class="sort-icon"> ▼</span></th>
+                    <th class="sortable" data-sort="protocol_nr" style="width: 25%;">Protokollnummer <span class="sort-icon"> ↕</span></th>
+                    <th class="sortable" data-sort="filename" style="width: 35%;">Dateiname (Zeichnung) <span class="sort-icon"> ↕</span></th>
+                    <th class="sortable" data-sort="size" style="width: 15%; text-align: right;">Größe <span class="sort-icon"> ↕</span></th>
+                </tr>
+            </thead>
+            <tbody id="orders-table-body">
+                <!-- Populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+</section>

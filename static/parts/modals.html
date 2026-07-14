@@ -1,0 +1,367 @@
+<!-- ==================== MODAL OVERLAYS (TEMPLATES) ==================== -->
+
+<!-- 1. Crimp Contact Editor Template -->
+<template id="tmpl-contact-editor">
+    <div class="modal-overlay" id="modal-contact-editor">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="contact-editor-title">Crimpkontakt bearbeiten</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-contact">
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="c-refnr">Artikelnummer (Referenz):</label>
+                            <input type="text" id="c-refnr" required>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="c-serie">Kontaktserie / Bezeichnung:</label>
+                            <input type="text" id="c-serie" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="c-hersteller">Hersteller:</label>
+                            <input type="text" id="c-hersteller" required>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="c-hersteller-nr">Hersteller Artikelnummer:</label>
+                            <input type="text" id="c-hersteller-nr">
+                        </div>
+                    </div>
+                    <div class="form-row flex-align" style="margin-bottom: 4px;">
+                        <label>Crimp-Typ:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="crimpType" id="type-open" value="open" checked> offen</label>
+                            <label><input type="radio" name="crimpType" id="type-closed" value="closed"> geschlossen</label>
+                        </div>
+                    </div>
+                
+                    <hr class="modal-divider">
+
+                    <h4 style="font-size: 0.95rem; margin-bottom: 8px;">Crimpzange & Slot zuweisen</h4>
+                    <div class="form-row mb-2">
+                        <div class="form-group col-6">
+                            <label for="c-add-xs">Querschnitt</label>
+                            <select id="c-add-xs">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="c-add-soll">Soll (N)</label>
+                            <input type="text" id="c-add-soll">
+                        </div>
+                    </div>
+                    <div class="form-row mb-2">
+                        <div class="form-group col-6">
+                            <label for="c-add-tool">Crimpzange</label>
+                            <select id="c-add-tool">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="c-add-slot">Slot</label>
+                            <select id="c-add-slot">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row mt-2">
+                        <button type="button" class="btn btn-secondary" id="btn-contact-add-xs" style="width: 100%; height: 38px; font-weight: 500;">Hinzufügen</button>
+                    </div>
+                </form>
+
+                <div class="list-container modal-table-container mt-2">
+                    <table class="list-ctrl">
+                        <thead>
+                            <tr>
+                                <th>Querschnitt</th>
+                                <th>Crimpzange</th>
+                                <th>Einsatz</th>
+                                <th>Soll-Wert</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="contact-xsec-list">
+                            <!-- Filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-contact">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="btn-save-contact">Speichern</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 2. Crimptool Editor Template -->
+<template id="tmpl-tool-editor">
+    <div class="modal-overlay" id="modal-tool-editor">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-tool-title">Neue Crimpzange</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                <form id="form-tool">
+                    <div class="form-group mb-2">
+                        <label for="t-hersteller">Hersteller:</label>
+                        <input type="text" id="t-hersteller">
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="t-serie">Serie / Bezeichnung:</label>
+                        <input type="text" id="t-serie">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="t-hersteller-nr">Hersteller Artikelnr.:</label>
+                        <input type="text" id="t-hersteller-nr">
+                    </div>
+                </form>
+
+                <hr class="modal-divider">
+
+                <!-- Slots -->
+                <div class="tool-list-box-container mb-3" style="display: flex; flex-direction: column;">
+                    <div class="list-box-header">Einsätze (Slots)</div>
+                    <div class="form-inline-inputs">
+                        <input type="text" id="t-new-slot-awg" placeholder="AWG (z.B. 20)">
+                        <input type="text" id="t-new-slot-xs" placeholder="mm² (z.B. 0.50)">
+                        <button type="button" class="btn btn-secondary btn-sm" id="btn-tool-add-slot">Hinzufügen</button>
+                    </div>
+                    <div class="box-list-container" style="max-height: 140px; overflow-y: auto; flex: none;">
+                        <div id="t-slots" class="item-list-group">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="modal-divider">
+
+                <!-- Zangen-IDs -->
+                <div class="tool-list-box-container" style="display: flex; flex-direction: column;">
+                    <div class="list-box-header">Zangen-Identifikationsnummern</div>
+                    <div class="form-inline-inputs">
+                        <input type="text" id="t-new-id" placeholder="ID (z.B. Z-004)">
+                        <button type="button" class="btn btn-secondary btn-sm" id="btn-tool-add-id">Hinzufügen</button>
+                    </div>
+                    <div class="box-list-container" style="max-height: 140px; overflow-y: auto; flex: none;">
+                        <div id="t-ids" class="item-list-group">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger mr-auto" id="btn-tool-delete">Zange löschen</button>
+                <button type="button" class="btn btn-secondary" id="btn-cancel-tool">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="btn-tool-save">Speichern</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 3. Annotate Contacts Template -->
+<template id="tmpl-annotate">
+    <div class="modal-overlay" id="modal-annotate">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Positionsnummer & Gehäuse zuweisen</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height: 60vh;">
+                <div class="annotation-grid-header">
+                    <div>Kontakt & Querschnitt</div>
+                    <div>Position (Pos.)</div>
+                    <div>Gehäuse</div>
+                </div>
+                <div class="annotation-fields" id="annotation-fields">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="btn-apply-annotations">Zuweisung übernehmen</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 4. Order Details Template -->
+<template id="tmpl-order-details">
+    <div class="modal-overlay" id="modal-order-details">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Auftragsdaten eingeben</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-order">
+                    <div class="form-group mb-2">
+                        <label for="o-bestellnr">Bestellnummer (Kunde):</label>
+                        <input type="text" id="o-bestellnr" placeholder="z.B. BEST-1002">
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="o-auftragsnr">Auftragsnummer (intern):</label>
+                        <input type="text" id="o-auftragsnr" placeholder="z.B. AUF-50042">
+                    </div>
+                    <div class="form-group">
+                        <label for="o-protokollnr">Prüfprotokollnummer:</label>
+                        <input type="text" id="o-protokollnr" placeholder="z.B. P-26-07">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="btn-order-print">🖨️ Drucken</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 5. Settings / Soll Values Dialog Template -->
+<template id="tmpl-settings">
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Einstellungen: Abzugswerte (Soll-Werte)</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-inline-fields mb-2">
+                    <div class="form-group">
+                        <label for="s-xs">Querschnitt (mm²):</label>
+                        <input type="text" id="s-xs" placeholder="z.B. 1.50">
+                    </div>
+                    <div class="form-group">
+                        <label for="s-open-soll">Offen (N):</label>
+                        <input type="text" id="s-open-soll" placeholder="z.B. 130">
+                    </div>
+                    <div class="form-group">
+                        <label for="s-closed-soll">Geschlossen (N):</label>
+                        <input type="text" id="s-closed-soll" placeholder="z.B. 210">
+                    </div>
+                </div>
+                <div class="form-row text-right mt-1 mb-2">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-settings-save-entry">Hinzufügen</button>
+                </div>
+                <div class="list-container modal-table-container">
+                    <table class="list-ctrl">
+                        <thead>
+                            <tr>
+                                <th>Querschnitt</th>
+                                <th>Offener Kontakt (N)</th>
+                                <th>Geschlossener Kontakt (N)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="settings-xsec-list">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger mr-auto" id="btn-settings-delete-entry" style="display: none;">Eintrag löschen</button>
+                <button type="button" class="btn btn-secondary" id="btn-cancel-settings">Schließen</button>
+                <button type="button" class="btn btn-primary" id="btn-settings-apply">Übernehmen</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 6. Save Template Dialog Template -->
+<template id="tmpl-save-template">
+    <div class="modal-overlay" id="modal-save-template">
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Vorlage speichern</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mb-2">
+                    <label for="t-save-scheme-nr">Zeichnungsnummer:</label>
+                    <input type="text" id="t-save-scheme-nr" placeholder="z.B. RO12345">
+                </div>
+                <div class="form-group">
+                    <label for="t-save-scheme-rev">Revision:</label>
+                    <input type="text" id="t-save-scheme-rev" placeholder="z.B. 1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-save">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="btn-save-template-confirm">Speichern</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 7. Confirm Overwrite Dialog Template -->
+<template id="tmpl-confirm-overwrite">
+    <div class="modal-overlay" id="modal-confirm-overwrite">
+        <div class="modal-box" style="max-width: 420px; border-top: 4px solid var(--danger);">
+            <div class="modal-header">
+                <h3>⚠️ Vorlage überschreiben?</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-overwrite-message" style="margin: 0; line-height: 1.5; color: var(--text-primary);">Die Vorlage existiert bereits. Möchten Sie sie überschreiben?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-overwrite">Abbrechen</button>
+                <button type="button" class="btn btn-danger" id="btn-confirm-overwrite-yes">Überschreiben</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 8. Update Status Template -->
+<template id="tmpl-update-status">
+    <div class="modal-overlay" id="modal-update-status">
+        <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Anwendung aktualisieren</h3>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
+                <div id="update-loader-spinner" style="text-align: center; padding: 20px 0;">
+                    <span class="spinner" style="display: inline-block; width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></span>
+                    <p style="margin-top: 10px; font-weight: 500;" id="update-status-text">Repository-Änderungen werden abgerufen...</p>
+                </div>
+                
+                <div id="update-output-container" style="display: none; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 500;">Git-Ausgabe (Log):</label>
+                    <pre id="update-console-log" style="background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; font-family: monospace; font-size: 0.8rem; max-height: 180px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; color: var(--text-primary);"></pre>
+                </div>
+                
+                <div id="update-countdown-text" style="font-size: 0.85rem; font-weight: 500; text-align: center; display: none; color: var(--success);">
+                    Neustart erfolgreich. Seite wird in <span id="update-seconds-left">3</span> Sekunden neu geladen...
+                </div>
+            </div>
+            <div class="modal-footer" id="update-status-footer" style="display: none;">
+                <button class="btn btn-secondary" id="btn-close-update-modal">Schließen</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- 9. Update Confirmation Dialog Template -->
+<template id="tmpl-update-confirm">
+    <div class="modal-overlay" id="modal-update-confirm">
+        <div class="modal-box" style="max-width: 420px; border-top: 4px solid var(--accent);">
+            <div class="modal-header">
+                <h3>🔄 Anwendung aktualisieren?</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin: 0; line-height: 1.5; color: var(--text-primary);">
+                    Möchten Sie die Anwendung jetzt aktualisieren? Dabei wird der neueste Code aus dem Git-Repository heruntergeladen und der Server neu gestartet.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-cancel-update">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-update-yes">Aktualisieren</button>
+            </div>
+        </div>
+    </div>
+</template>

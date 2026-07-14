@@ -30,6 +30,37 @@ import { initOrderDetails } from './modals/orderDetails.js';
 import { openModal, closeModal } from './modal.js';
 import { showToast } from './toast.js';
 
+async function loadHtmlParts() {
+    const parts = [
+        { path: 'parts/view-overview.html', selector: 'main.main-content' },
+        { path: 'parts/view-editor.html', selector: 'main.main-content' },
+        { path: 'parts/view-orders.html', selector: 'main.main-content' },
+        { path: 'parts/context-menus.html', selector: 'body' },
+        { path: 'parts/modals.html', selector: 'body' }
+    ];
+
+    await Promise.all(parts.map(async part => {
+        const res = await fetch(part.path);
+        if (!res.ok) throw new Error(`HTML-Teil konnte nicht geladen werden: ${part.path}`);
+        const html = await res.text();
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html.trim();
+        
+        const parent = document.querySelector(part.selector);
+        if (parent) {
+            while (tempDiv.firstChild) {
+                parent.appendChild(tempDiv.firstChild);
+            }
+        }
+    }));
+
+    const loadingScreen = document.getElementById('app-loading-screen');
+    if (loadingScreen) {
+        loadingScreen.remove();
+    }
+}
+
 function instantiateTemplates() {
     const templates = document.querySelectorAll('template[id^="tmpl-"]');
     templates.forEach(tmpl => {
@@ -39,6 +70,14 @@ function instantiateTemplates() {
 }
 
 async function bootstrap() {
+    try {
+        await loadHtmlParts();
+    } catch (err) {
+        console.error("Failed to load HTML parts", err);
+        showToast("Fehler beim Laden der Benutzeroberfläche.", "error", 10000);
+        return;
+    }
+
     instantiateTemplates();
     // Show toast loader status
     showToast("Lade Anwendungsdaten...", "info", 1500);

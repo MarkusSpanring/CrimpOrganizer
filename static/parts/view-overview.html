@@ -1,0 +1,69 @@
+<!-- VIEW 1: OVERVIEW -->
+<section class="view-panel" id="view-overview">
+    <div class="overview-layout">
+        <!-- Left: Drawings unique list -->
+        <div class="overview-sidebar-list" style="width: 210px;">
+            <div class="panel-header">
+                <h2>Zeichnungen</h2>
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-drawing" placeholder="Zeichnung suchen...">
+            </div>
+            <div class="list-container">
+                <ul class="flat-list" id="drawings-list">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Middle: Revisions list for selected drawing -->
+        <div class="overview-sidebar-list" style="width: 140px;">
+            <div class="panel-header">
+                <h2>Revisionen</h2>
+            </div>
+            <div class="list-container">
+                <ul class="flat-list" id="revisions-list">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right: Selected Drawing Preview Panel -->
+        <div class="overview-preview-area">
+            <div class="empty-state" id="overview-empty-state">
+                <div class="empty-icon">📑</div>
+                <p>Wählen Sie links eine Zeichnung und eine Revision aus, um Details anzuzeigen und sie zu drucken.</p>
+            </div>
+
+            <div class="preview-panel" id="overview-preview-panel" style="display: none;">
+                <div class="panel-header">
+                    <h2 id="preview-title">Zeichnung: -</h2>
+                    <div class="preview-actions">
+                        <button class="btn btn-primary btn-sm" id="btn-print-drawing">🖨️ Drucken</button>
+                        <button class="btn btn-secondary btn-sm" id="btn-edit-drawing-template">✏️ Bearbeiten</button>
+                        <button class="btn btn-danger btn-sm" id="btn-delete-drawing-template">🗑️ Löschen</button>
+                    </div>
+                </div>
+
+                <div class="list-container">
+                    <table class="list-ctrl">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">Pos.</th>
+                                <th style="width: 20%;">Gehäuse</th>
+                                <th style="width: 25%;">Crimpung</th>
+                                <th style="width: 15%;">Ø</th>
+                                <th style="width: 15%;">Einsatz</th>
+                                <th style="width: 15%;">Zange</th>
+                                <th style="width: 15%;">Soll-Wert</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preview-steps-list">
+                            <!-- Read-only steps list -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
