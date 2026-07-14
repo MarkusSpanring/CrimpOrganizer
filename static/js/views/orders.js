@@ -6,10 +6,12 @@ import { state } from '../state.js';
 import { apiFetchOrders } from '../api.js';
 import { showToast } from '../toast.js';
 
-const elOrdersTable = document.getElementById('orders-table-body');
-const elOrdersSearch = document.getElementById('search-orders');
+let elOrdersTable;
+let elOrdersSearch;
 
 export function initOrders() {
+    elOrdersTable = document.getElementById('orders-table-body');
+    elOrdersSearch = document.getElementById('search-orders');
     if (elOrdersSearch) {
         elOrdersSearch.addEventListener('input', () => {
             populateOrdersList();

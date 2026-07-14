@@ -8,14 +8,20 @@ import { loadDrawingIntoEditor } from './editor.js';
 import { openOrderDetailsModal } from '../modals/orderDetails.js';
 import { showToast } from '../toast.js';
 
-const elDrawingsList = document.getElementById('drawings-list');
-const elRevisionsList = document.getElementById('revisions-list');
-const elOverviewEmptyState = document.getElementById('overview-empty-state');
-const elOverviewPreviewPanel = document.getElementById('overview-preview-panel');
-const elPreviewTitle = document.getElementById('preview-title');
-const elPreviewStepsList = document.getElementById('preview-steps-list');
+let elDrawingsList;
+let elRevisionsList;
+let elOverviewEmptyState;
+let elOverviewPreviewPanel;
+let elPreviewTitle;
+let elPreviewStepsList;
 
 export function initOverview() {
+    elDrawingsList = document.getElementById('drawings-list');
+    elRevisionsList = document.getElementById('revisions-list');
+    elOverviewEmptyState = document.getElementById('overview-empty-state');
+    elOverviewPreviewPanel = document.getElementById('overview-preview-panel');
+    elPreviewTitle = document.getElementById('preview-title');
+    elPreviewStepsList = document.getElementById('preview-steps-list');
     // Search drawing filter
     const searchDrawingInput = document.getElementById('search-drawing');
     if (searchDrawingInput) {

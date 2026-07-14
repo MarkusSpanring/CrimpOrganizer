@@ -15,23 +15,36 @@ import { showContextMenu } from '../contextMenu.js';
 import { switchView } from '../router.js';
 
 // DOM Elements
-const elContactsTable = document.getElementById('contacts-table-body');
-const elToolsTable = document.getElementById('tools-table-body');
-const elToolSummaryTable = document.getElementById('tool-summary-body');
-const elInstructionsTable = document.getElementById('instructions-table-body');
+let elContactsTable;
+let elToolsTable;
+let elToolSummaryTable;
+let elInstructionsTable;
 
-const elFilterBanner = document.getElementById('filter-banner');
-const elFilterName = document.getElementById('filter-name');
-const btnClearFilter = document.getElementById('btn-clear-filter');
+let elFilterBanner;
+let elFilterName;
+let btnClearFilter;
 
-const btnSaveDraft = document.getElementById('btn-save-draft');
-const btnPrintEditor = document.getElementById('btn-print-editor');
-const btnClearEditor = document.getElementById('btn-clear-editor');
+let btnSaveDraft;
+let btnPrintEditor;
+let btnClearEditor;
 
-const elSchemeNr = document.getElementById('scheme-nr');
-const elSchemeRev = document.getElementById('scheme-rev');
+let elSchemeNr;
+let elSchemeRev;
 
 export function initEditor() {
+    elContactsTable = document.getElementById('contacts-table-body');
+    elToolsTable = document.getElementById('tools-table-body');
+    elToolSummaryTable = document.getElementById('tool-summary-body');
+    elInstructionsTable = document.getElementById('instructions-table-body');
+    elFilterBanner = document.getElementById('filter-banner');
+    elFilterName = document.getElementById('filter-name');
+    btnClearFilter = document.getElementById('btn-clear-filter');
+    btnSaveDraft = document.getElementById('btn-save-draft');
+    btnPrintEditor = document.getElementById('btn-print-editor');
+    btnClearEditor = document.getElementById('btn-clear-editor');
+    elSchemeNr = document.getElementById('scheme-nr');
+    elSchemeRev = document.getElementById('scheme-rev');
+
     // Contact list controls
     const searchContact = document.getElementById('search-contact');
     if (searchContact) {
