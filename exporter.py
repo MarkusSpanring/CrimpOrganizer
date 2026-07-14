@@ -36,8 +36,9 @@ class CrimpInstructionPDF():
         self.canvas.line(self.border, 745,
                          self.pdf_width - self.border, 745)
 
-        self.canvas.drawImage("ewolf.png", self.pdf_width - 150 - self.border,
-                              753, height=55, width=160)
+        _logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ewolf.png")
+        self.canvas.drawImage(_logo_path, self.pdf_width - 150 - self.border,
+                               753, height=55, width=160)
 
     def drawInstructionType(self):
         fontsize = 8
@@ -243,11 +244,12 @@ class CrimpInstructionPDF():
         self.canvas.save()
 
     def showPDF(self):
-        startpath = "data" + self.outpath.split("data")[-1]
         if sys.platform.startswith("win32"):
-            subprocess.call('start ' + startpath, shell=True)
+            os.startfile(self.outpath)
+        elif sys.platform.startswith("darwin"):
+            subprocess.run(['open', self.outpath], check=True)
         else:
-            subprocess.run(['open', startpath], check=True)
+            subprocess.run(['xdg-open', self.outpath], check=True)
 
 
 def applyStyle(row, font, colspacing):

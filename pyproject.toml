@@ -1,0 +1,10 @@
+[project]
+name = "crimp-organizer"
+version = "0.1.0"
+description = "Lightweight Python and Web app to manage crimp contacts, tools, and generate PDFs."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "reportlab>=4.0.0",
+    "flask>=3.0.0",
+]

@@ -1,0 +1,371 @@
+/* ==========================================================
+   Components — buttons, search, filter banner, tables,
+   context menus, empty states, row actions, toast notices.
+   ========================================================== */
+
+/* ── Buttons ──────────────────────────────────────────── */
+.btn {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 7px 14px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+    user-select: none;
+    line-height: 1;
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    border-radius: var(--radius-sm);
+}
+
+.btn-full { width: 100%; }
+
+.btn-primary {
+    background-color: var(--accent);
+    color: #fff;
+}
+.btn-primary:not(:disabled):hover {
+    background-color: var(--accent-hover);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.btn-secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+.btn-secondary:not(:disabled):hover {
+    background-color: var(--border-color);
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: #fff;
+}
+.btn-danger:not(:disabled):hover {
+    background-color: var(--danger-hover);
+}
+
+/* Clear / × button inside search boxes */
+.btn-clear {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    display: none;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
+}
+.btn-clear:hover { color: var(--text-primary); }
+
+/* Icon action buttons (✏️ 🗑️ in table rows) */
+.action-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+.action-icon-btn:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    transform: scale(1.15);
+}
+.action-icon-btn.danger:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--danger-hover);
+}
+
+.row-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+}
+
+.list-ctrl td.row-actions {
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* ── Search Box ───────────────────────────────────────── */
+.search-box {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+.search-box input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    outline: none;
+}
+.search-box input::placeholder { color: var(--text-secondary); }
+
+/* ── Filter Banner ────────────────────────────────────── */
+.filter-banner {
+    padding: 5px 14px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: rgba(37, 99, 235, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+.filter-banner span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Tables ──────────────────────────────────────────── */
+.list-container {
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--bg-primary);
+    min-height: 0;
+}
+
+.list-ctrl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    table-layout: fixed;
+}
+
+.list-ctrl th {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    padding: 9px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.list-ctrl th.sortable { cursor: pointer; }
+.list-ctrl th.sortable:hover { color: var(--text-primary); }
+
+.sort-icon {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.list-ctrl td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: background-color var(--transition-fast);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.list-ctrl tbody tr { cursor: pointer; }
+.list-ctrl tbody tr:hover { background-color: var(--bg-tertiary); }
+
+.list-ctrl tbody tr.selected {
+    background-color: var(--accent-glow) !important;
+    outline: none;
+}
+.list-ctrl tbody tr.selected td:first-child {
+    border-left: 3px solid var(--accent);
+    padding-left: 11px;
+}
+.list-ctrl tbody tr.selected td { color: #fff; }
+
+/* Table cells inside list-ctrl that contain buttons */
+.list-ctrl td .btn-sm {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    font-weight: 500;
+}
+
+/* ── Context Menus ───────────────────────────────────── */
+.context-menu {
+    display: none;
+    position: fixed;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-overlay);
+    border-radius: var(--radius-md);
+    z-index: 1500;
+    width: 190px;
+    overflow: hidden;
+    animation: fadeSlideIn 0.12s ease-out both;
+}
+
+.context-menu ul { list-style: none; }
+
+.context-menu li {
+    padding: 9px 16px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.context-menu li:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+}
+.context-menu li.danger { color: var(--danger-hover); }
+.context-menu li.danger:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+.context-menu .menu-separator {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 4px 0;
+}
+
+/* ── Empty States ────────────────────────────────────── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+.empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+.empty-state p {
+    font-size: 0.85rem;
+    max-width: 260px;
+    line-height: 1.5;
+}
+
+/* ── Preview Panel Actions ───────────────────────────── */
+.preview-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* ── Toast Notifications ─────────────────────────────── */
+#toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: all;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-overlay);
+    padding: 12px 16px;
+    min-width: 260px;
+    max-width: 380px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: toastIn 0.25s ease-out both;
+    font-size: 0.875rem;
+}
+
+.toast.toast-out {
+    animation: toastOut 0.25s ease-in forwards;
+}
+
+.toast-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.toast-body {
+    flex: 1;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: color var(--transition-fast);
+}
+.toast-close:hover { color: var(--text-primary); }
+
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error   { border-left: 3px solid var(--danger);  }
+.toast.warning { border-left: 3px solid var(--warning);  }
+.toast.info    { border-left: 3px solid var(--accent);   }
+
+@keyframes toastIn  {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(20px); }
+}

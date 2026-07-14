@@ -1,0 +1,11 @@
+/* ==========================================================
+   CrimpOrganizer Core Design System Index
+   Importing modular, componentized style modules.
+   ========================================================== */
+
+@import url('css/variables.css');
+@import url('css/base.css');
+@import url('css/layout.css');
+@import url('css/components.css');
+@import url('css/modals.css');
+@import url('css/utilities.css');

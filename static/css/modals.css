@@ -1,0 +1,394 @@
+/* ==========================================================
+   Modals — styling for overlay screens, modal dialog boxes,
+   header/footer areas, inputs, forms, and custom modal layouts.
+   ========================================================== */
+
+/* ── Modal Overlay Backdrop ────────────────────────────── */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--modal-backdrop);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* ── Modal Dialog Box ─────────────────────────────────── */
+.modal-box {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-overlay);
+    width: 90%;
+    max-width: 550px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(-20px);
+    transition: transform var(--transition-normal);
+}
+
+.modal-overlay.active .modal-box {
+    transform: translateY(0);
+}
+
+.modal-lg {
+    max-width: 1000px;
+    width: 95%;
+}
+
+.modal-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.modal-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.modal-footer {
+    background-color: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.modal-divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 16px 0;
+}
+
+/* ── Form Controls inside Modals ──────────────────────── */
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.form-row .col-6 {
+    flex: 0 0 calc(50% - 8px);
+    max-width: calc(50% - 8px);
+}
+
+.form-row.flex-align {
+    align-items: center;
+    gap: 16px;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-group input, 
+.form-group select {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    outline: none;
+    font-family: var(--font-sans);
+    transition: border-color var(--transition-fast);
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+    border-color: var(--accent);
+}
+
+.form-group input:disabled, 
+.form-group select:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Radio buttons alignment */
+.radio-group {
+    display: flex;
+    gap: 16px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    user-select: none;
+}
+
+.radio-group input[type="radio"] {
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+/* Custom layout for adding cross-sections to contact */
+.add-xsec-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.add-xsec-form .form-group {
+    margin-bottom: 0;
+}
+
+.modal-table-container {
+    height: 180px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow-y: auto;
+}
+
+/* ── Tool Editor Layout ───────────────────────────────── */
+.tool-editor-layout {
+    height: 440px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-details-pane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.tool-grid-lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+    margin-top: 12px;
+}
+
+.tool-list-box-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.list-box-header {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-inline-inputs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.form-inline-inputs input {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    flex: 1;
+    min-width: 0;
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.form-inline-inputs input:focus {
+    border-color: var(--accent);
+}
+
+.form-inline-inputs input:disabled {
+    opacity: 0.4;
+}
+
+.box-table-container {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow-y: auto;
+    background-color: var(--bg-primary);
+    min-height: 0;
+}
+
+.box-list-container {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-primary);
+    overflow: hidden;
+    min-height: 0;
+}
+
+.box-list-container select {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    padding: 6px;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.box-list-container select option {
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+}
+
+.box-list-container select option:checked {
+    background-color: var(--accent) !important;
+    color: #fff;
+}
+
+/* ── Annotation Modal Grid ────────────────────────────── */
+.annotation-grid-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    gap: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 4px;
+}
+
+.annotation-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.annotation-row-fields {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    gap: 12px;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.annotation-label {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.annotation-row-fields input {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 7px 10px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.annotation-row-fields input:focus {
+    border-color: var(--accent);
+}
+
+/* ── Settings Modal Grid ──────────────────────────────── */
+.form-inline-fields {
+    display: flex;
+    gap: 8px;
+}
+
+.form-inline-fields .form-group {
+    flex: 1;
+}
+
+/* ── Custom Item Lists with inline deletes ─────────────── */
+.item-list-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.list-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+.list-item-row:last-child {
+    border-bottom: none;
+}
+
+.list-item-row span {
+    color: var(--text-primary);
+}
+
+.list-item-row .btn-delete-item {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+}
+
+.list-item-row .btn-delete-item:hover {
+    color: var(--danger);
+}
