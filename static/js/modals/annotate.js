@@ -55,20 +55,25 @@ function onApplyAnnotationsClicked() {
     const housingInputs = elFields.querySelectorAll('.housing-input');
     
     let error = false;
-    let positions = [];
     
-    // Check validation
+    // Check validation for positions
     posInputs.forEach(input => {
         const val = input.value.trim();
-        const key = input.getAttribute('data-key');
-        
         if (!val) {
             showToast("Bitte alle Positionsnummern ausfüllen.", "warning");
             error = true;
-            return;
         }
-        
-        positions.push(val);
+    });
+    
+    if (error) return;
+    
+    // Check validation for housing names
+    housingInputs.forEach(input => {
+        const val = input.value.trim();
+        if (!val) {
+            showToast("Bitte alle Gehäusebezeichnungen ausfüllen.", "warning");
+            error = true;
+        }
     });
     
     if (error) return;

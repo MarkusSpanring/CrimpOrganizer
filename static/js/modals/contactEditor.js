@@ -191,6 +191,18 @@ function populateContactEditorToolsDropdown() {
     populateContactEditorSlotsDropdown("");
 }
 
+function formatSlot(slot) {
+    if (Array.isArray(slot)) {
+        const awg = slot[0] ? `AWG ${slot[0]}` : "";
+        const met = slot[1] ? `${slot[1]} mm²` : "";
+        if (awg && met) {
+            return `${awg} | ${met}`;
+        }
+        return awg || met;
+    }
+    return String(slot);
+}
+
 function populateContactEditorSlotsDropdown(toolRef) {
     if (!elSlotSelect) return;
     elSlotSelect.innerHTML = '<option value="">-- Slot --</option>';
@@ -199,9 +211,10 @@ function populateContactEditorSlotsDropdown(toolRef) {
     
     const slots = state.tools[toolRef].slots || [];
     slots.forEach(slot => {
+        const formatted = formatSlot(slot);
         const option = document.createElement('option');
-        option.value = slot;
-        option.textContent = slot;
+        option.value = formatted;
+        option.textContent = formatted;
         elSlotSelect.appendChild(option);
     });
 }

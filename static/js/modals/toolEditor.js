@@ -100,6 +100,18 @@ function checkToolChanges() {
     btnSave.disabled = !changed;
 }
 
+function formatSlot(slot) {
+    if (Array.isArray(slot)) {
+        const awg = slot[0] ? `AWG ${slot[0]}` : "";
+        const met = slot[1] ? `${slot[1]} mm²` : "";
+        if (awg && met) {
+            return `${awg} | ${met}`;
+        }
+        return awg || met;
+    }
+    return String(slot);
+}
+
 export function openToolEditor(ref = "") {
     currentToolRef = ref;
     
@@ -123,7 +135,7 @@ export function openToolEditor(ref = "") {
         elSeries.value = t.series || "";
         elProdNr.value = t.producerNr || "";
         
-        localSlots = copyObject(t.slots || []);
+        localSlots = (t.slots || []).map(formatSlot);
         localIds = copyObject(t.IDs || []);
         
         btnSave.textContent = "Speichern";

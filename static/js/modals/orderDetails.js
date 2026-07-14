@@ -22,6 +22,10 @@ export function initOrderDetails() {
     if (btnPrint) {
         btnPrint.addEventListener('click', onOrderDetailsPrintClicked);
     }
+
+    if (elBestellNr) elBestellNr.addEventListener('input', updatePrintButtonState);
+    if (elAuftragsNr) elAuftragsNr.addEventListener('input', updatePrintButtonState);
+    if (elProtokollNr) elProtokollNr.addEventListener('input', updatePrintButtonState);
 }
 
 export function openOrderDetailsModal() {
@@ -30,7 +34,16 @@ export function openOrderDetailsModal() {
     elAuftragsNr.value = "";
     elProtokollNr.value = "";
     
+    updatePrintButtonState();
     openModal(modal);
+}
+
+function updatePrintButtonState() {
+    if (!btnPrint) return;
+    const val1 = elBestellNr.value.trim();
+    const val2 = elAuftragsNr.value.trim();
+    const val3 = elProtokollNr.value.trim();
+    btnPrint.disabled = !(val1 && val2 && val3);
 }
 
 async function onOrderDetailsPrintClicked() {
@@ -46,14 +59,13 @@ async function onOrderDetailsPrintClicked() {
     const orderDetails = [
         elBestellNr.value.trim(),
         elAuftragsNr.value.trim(),
-        elProtokollNr.value.trim(),
-        schemeNr
+        elProtokollNr.value.trim()
     ];
     
     const payload = {
         scheme: scheme,
         order_details: orderDetails,
-        full_instructions: Object.keys(state.fullInstructions)
+        full_instructions: state.fullInstructions
     };
     
     btnPrint.disabled = true;
